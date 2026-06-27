@@ -31,12 +31,18 @@ Local unsigned builds are suitable for development and local testing. Public dis
 
 ## Available Installation Files
 
-After a successful package build, these local installation files are available:
+The latest Apple Silicon installation files are attached to the `v0.1.0` GitHub release:
+
+- [Reading.Ruler_0.1.0_aarch64.dmg](https://github.com/bilalalissa/Reading-Ruler/releases/download/v0.1.0/Reading.Ruler_0.1.0_aarch64.dmg)
+- [Reading.Ruler_0.1.0_aarch64.app.zip](https://github.com/bilalalissa/Reading-Ruler/releases/download/v0.1.0/Reading.Ruler_0.1.0_aarch64.app.zip)
+- [Reading.Ruler_0.1.0_aarch64.sha256](https://github.com/bilalalissa/Reading-Ruler/releases/download/v0.1.0/Reading.Ruler_0.1.0_aarch64.sha256)
+
+After a successful package build, the same local installation files are available:
 
 - `src-tauri/target/release/bundle/macos/Reading Ruler.app`
 - `src-tauri/target/release/bundle/dmg/Reading Ruler_0.1.0_aarch64.dmg`
 
-Use the DMG for local drag-and-drop installation testing. Use the `.app` bundle for direct local launch testing.
+Use the DMG for drag-and-drop installation testing. Use the `.app` bundle or `.app.zip` for direct launch testing. The current package is unsigned/ad-hoc; public distribution still needs Developer ID signing and notarization.
 
 The local Apple Silicon package is finished when `npm run app:package:mac` reports:
 

@@ -85,12 +85,18 @@ Public distribution still needs Developer ID signing, hardened runtime, and nota
 
 ### Available Installation Files
 
-After `npm run app:package:mac`, the currently available local installation files are:
+The latest Apple Silicon installation files are attached to the `v0.1.0` GitHub release:
+
+- [Reading.Ruler_0.1.0_aarch64.dmg](https://github.com/bilalalissa/Reading-Ruler/releases/download/v0.1.0/Reading.Ruler_0.1.0_aarch64.dmg)
+- [Reading.Ruler_0.1.0_aarch64.app.zip](https://github.com/bilalalissa/Reading-Ruler/releases/download/v0.1.0/Reading.Ruler_0.1.0_aarch64.app.zip)
+- [Reading.Ruler_0.1.0_aarch64.sha256](https://github.com/bilalalissa/Reading-Ruler/releases/download/v0.1.0/Reading.Ruler_0.1.0_aarch64.sha256)
+
+After `npm run app:package:mac`, the same local installation files are available at:
 
 - `src-tauri/target/release/bundle/macos/Reading Ruler.app`
 - `src-tauri/target/release/bundle/dmg/Reading Ruler_0.1.0_aarch64.dmg`
 
-Use the DMG for local drag-and-drop installation testing. Use the `.app` bundle for direct local launch testing.
+Use the DMG for drag-and-drop installation testing. Use the `.app` bundle or `.app.zip` for direct launch testing. The current package is unsigned/ad-hoc; public distribution still needs Developer ID signing and notarization.
 
 ## How To Use
 
