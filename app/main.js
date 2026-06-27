@@ -269,9 +269,9 @@ async function refreshTargetWindows() {
     targets.forEach((target) => {
       const option = document.createElement("option");
       option.value = String(target.id);
-      option.textContent = `${target.ownerName}: ${target.title} (${Math.round(
-        target.width,
-      )}x${Math.round(target.height)})`;
+      const title = String(target.title || "").trim() || "Untitled window";
+      option.textContent = `${target.ownerName}: ${title}`;
+      option.title = `${target.ownerName}: ${title}`;
       fields.targetWindowId.append(option);
     });
     fields.targetWindowId.value = selected;
