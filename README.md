@@ -208,7 +208,7 @@ Developer-only run instructions are in [Development](docs/DEVELOPMENT.md).
 
 ## Current Limitations
 
-- macOS Apple Silicon local packaging is verified on this machine. Intel and universal macOS packaging require installing the `x86_64-apple-darwin` Rust target. Windows packaging must be run on Windows.
+- Unsigned local packaging is verified through GitHub Actions for macOS Apple Silicon, macOS Intel, universal macOS, Windows NSIS, and Windows MSI artifacts.
 - Targeted window mode is best-effort. If the selected window closes, minimizes, moves to another Space, or is not frontmost, the overlay hides and reports the target state.
 - Target window listing may be limited by macOS privacy protections or by Windows apps that do not expose normal top-level window titles.
 - Clipboard image import depends on WebView/macOS clipboard access; normal paste in the control panel is also supported.
