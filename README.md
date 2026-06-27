@@ -100,19 +100,26 @@ xattr -dr com.apple.quarantine "$HOME/Applications/Reading Ruler.app"
 Build locally instead:
 
 1. Install Rust/Cargo, Node.js/npm, and Xcode Command Line Tools.
-2. Install dependencies:
+2. Open the macOS `Terminal` app.
+3. Go to the project folder. If you downloaded the repo ZIP, use the unzipped folder. If you cloned the repo, run:
+
+```sh
+cd Reading-Ruler
+```
+
+4. Install dependencies:
 
 ```sh
 npm install
 ```
 
-3. Build and install:
+5. Build and install:
 
 ```sh
 npm run app:package:mac:local -- --target arm64 --install
 ```
 
-4. Open the app:
+6. Open the app:
 
 ```sh
 open "$HOME/Applications/Reading Ruler.app"
@@ -125,27 +132,29 @@ Use this on Intel Macs.
 No Intel release download is published yet. Build the Intel local app from the repo:
 
 1. Download the repo from <https://github.com/bilalalissa/Reading-Ruler> using `Code` > `Download ZIP`, or clone it:
+2. Open the macOS `Terminal` app.
+3. If you chose `Download ZIP`, go to the unzipped project folder in Terminal. If you use Git, run:
 
 ```sh
 git clone https://github.com/bilalalissa/Reading-Ruler.git
 cd Reading-Ruler
 ```
 
-2. Install Rust/Cargo, Node.js/npm, and Xcode Command Line Tools.
-3. Install dependencies and the Intel Rust target:
+4. Install Rust/Cargo, Node.js/npm, and Xcode Command Line Tools.
+5. Install dependencies and the Intel Rust target in Terminal:
 
 ```sh
 npm install
 rustup target add x86_64-apple-darwin
 ```
 
-4. Build and install:
+6. Build and install in Terminal:
 
 ```sh
 npm run app:package:mac:local -- --target x64 --install
 ```
 
-5. Open the app:
+7. Open the app:
 
 ```sh
 open "$HOME/Applications/Reading Ruler.app"
@@ -158,27 +167,29 @@ Use this when one local app bundle should run on both Apple Silicon and Intel Ma
 No universal macOS release download is published yet. Build the universal local app from the repo:
 
 1. Download the repo from <https://github.com/bilalalissa/Reading-Ruler> using `Code` > `Download ZIP`, or clone it:
+2. Open the macOS `Terminal` app.
+3. If you chose `Download ZIP`, go to the unzipped project folder in Terminal. If you use Git, run:
 
 ```sh
 git clone https://github.com/bilalalissa/Reading-Ruler.git
 cd Reading-Ruler
 ```
 
-2. Install Rust/Cargo, Node.js/npm, and Xcode Command Line Tools.
-3. Install dependencies and the Intel Rust target:
+4. Install Rust/Cargo, Node.js/npm, and Xcode Command Line Tools.
+5. Install dependencies and the Intel Rust target in Terminal:
 
 ```sh
 npm install
 rustup target add x86_64-apple-darwin
 ```
 
-4. Build and install:
+6. Build and install in Terminal:
 
 ```sh
 npm run app:package:mac:local -- --target universal --install
 ```
 
-5. Open the app:
+7. Open the app:
 
 ```sh
 open "$HOME/Applications/Reading Ruler.app"
@@ -193,32 +204,34 @@ Use this on Windows for a local unsigned installer.
 No Windows release download is published yet. Build the Windows local installer from the repo:
 
 1. Download the repo from <https://github.com/bilalalissa/Reading-Ruler> using `Code` > `Download ZIP`, or clone it:
+2. Open `PowerShell`.
+3. If you chose `Download ZIP`, go to the unzipped project folder in PowerShell. If you use Git, run:
 
 ```powershell
 git clone https://github.com/bilalalissa/Reading-Ruler.git
 cd Reading-Ruler
 ```
 
-2. Install Rust/Cargo with the MSVC toolchain, Node.js/npm, Microsoft WebView2 Runtime, and Visual Studio Build Tools.
-3. Install dependencies:
+4. Install Rust/Cargo with the MSVC toolchain, Node.js/npm, Microsoft WebView2 Runtime, and Visual Studio Build Tools.
+5. Install dependencies in PowerShell:
 
 ```powershell
 npm install
 ```
 
-4. Build the default NSIS installer:
+6. Build the default NSIS installer in PowerShell:
 
 ```powershell
 npm run app:package:windows:local
 ```
 
-5. Run the generated installer from:
+7. Run the generated installer from:
 
 ```text
 src-tauri\target\release\bundle\
 ```
 
-6. If Windows SmartScreen warns that the installer is unsigned, choose the local/internal install option to continue.
+8. If Windows SmartScreen warns that the installer is unsigned, choose the local/internal install option to continue.
 
 To build MSI instead:
 
