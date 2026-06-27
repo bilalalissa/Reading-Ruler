@@ -51,112 +51,7 @@ Use multiple rulers when you want separate overlays for different regions, windo
 
 ## Install
 
-There are two install paths:
-
-- **Download the ready-made Apple Silicon app zip** if you are on an M1, M2, M3, or newer Mac.
-- **Build locally from the repo** for macOS Intel, universal macOS, Windows, or when you want the latest source version.
-
-The dependency checker scripts are inside the repo. If you are building locally, get the repo first, then run the checker for your platform.
-
-### Get The Repo First
-
-Use this before any build-from-source install.
-
-#### macOS
-
-1. Open the macOS `Terminal` app.
-2. Choose where you want the project folder, for example:
-
-```sh
-cd "$HOME/Downloads"
-```
-
-3. If Git is installed, clone the repo:
-
-```sh
-git clone https://github.com/bilalalissa/Reading-Ruler.git
-cd Reading-Ruler
-```
-
-If Git is not installed, open <https://github.com/bilalalissa/Reading-Ruler>, choose `Code` > `Download ZIP`, unzip it, then in Terminal run `cd` into the unzipped `Reading-Ruler` folder.
-
-#### Windows
-
-1. Open `PowerShell`.
-2. Choose where you want the project folder, for example:
-
-```powershell
-cd $HOME\Downloads
-```
-
-3. If Git is installed, clone the repo:
-
-```powershell
-git clone https://github.com/bilalalissa/Reading-Ruler.git
-cd Reading-Ruler
-```
-
-If Git is not installed, open <https://github.com/bilalalissa/Reading-Ruler>, choose `Code` > `Download ZIP`, unzip it, then in PowerShell run `cd` into the unzipped `Reading-Ruler` folder.
-
-### Install Build Dependencies
-
-Run these commands from inside the `Reading-Ruler` repo folder.
-
-#### macOS Apple Silicon
-
-In Terminal:
-
-```sh
-./script/check_macos_deps.sh
-```
-
-If the script reports missing tools, let it try to install them:
-
-```sh
-./script/check_macos_deps.sh --install
-```
-
-The script checks Xcode Command Line Tools, Rust/Cargo/rustup, and Node.js/npm. It can open the Xcode Command Line Tools installer and use Homebrew for Node.js or rustup if Homebrew is installed.
-
-#### macOS Intel Or Universal
-
-In Terminal:
-
-```sh
-./script/check_macos_deps.sh --with-intel-target
-```
-
-If the script reports missing tools, let it try to install them:
-
-```sh
-./script/check_macos_deps.sh --install --with-intel-target
-```
-
-This checks the normal macOS dependencies plus the `x86_64-apple-darwin` Rust target needed for Intel/universal builds.
-
-#### Windows
-
-In PowerShell:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File script/check_windows_deps.ps1
-```
-
-If the script reports missing tools, let it try to install them with `winget`:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File script/check_windows_deps.ps1 -Install
-```
-
-The script checks Rust/Cargo/rustup with the MSVC toolchain, Node.js/npm, Visual Studio Build Tools with MSVC, and Microsoft WebView2 Runtime.
-
-If automatic install is not available, install missing dependencies manually:
-
-- Rust/Cargo: <https://rustup.rs/>
-- Node.js/npm: <https://nodejs.org/>
-- Xcode Command Line Tools: run `xcode-select --install` in macOS Terminal.
-- Visual Studio Build Tools: <https://visualstudio.microsoft.com/visual-cpp-build-tools/>
-- Microsoft WebView2 Runtime: <https://developer.microsoft.com/microsoft-edge/webview2/>
+Regular users should install already-built files from the GitHub release or the `Local Packaging` workflow artifacts. You do not need Rust, Node.js, Cargo, Xcode Command Line Tools, or Visual Studio Build Tools unless you are building from source.
 
 ### macOS Apple Silicon Install
 
@@ -177,222 +72,25 @@ Install from the downloaded file:
 xattr -dr com.apple.quarantine "$HOME/Applications/Reading Ruler.app"
 ```
 
-Build locally instead:
-
-1. Get the repo using the macOS steps above.
-2. In Terminal, install/check dependencies:
-
-```sh
-./script/check_macos_deps.sh
-```
-
-3. If anything is missing, let the script try to install it:
-
-```sh
-./script/check_macos_deps.sh --install
-```
-
-4. Install project dependencies:
-
-```sh
-npm install
-```
-
-5. Build and install:
-
-```sh
-npm run app:package:mac:local -- --target arm64 --install
-```
-
-6. Open the app:
-
-```sh
-open "$HOME/Applications/Reading Ruler.app"
-```
+For source builds and developer runs, see [Development](docs/DEVELOPMENT.md).
 
 ### macOS Intel Install
 
 Use this on Intel Macs.
 
-No Intel release download is published yet. Build the Intel local app from the repo:
-
-1. Get the repo using the macOS steps above.
-2. In Terminal, install/check dependencies and the Intel Rust target:
-
-```sh
-./script/check_macos_deps.sh --with-intel-target
-```
-
-3. If anything is missing, let the script try to install it:
-
-```sh
-./script/check_macos_deps.sh --install --with-intel-target
-```
-
-4. Install project dependencies:
-
-```sh
-npm install
-```
-
-5. Build and install:
-
-```sh
-npm run app:package:mac:local -- --target x64 --install
-```
-
-6. Open the app:
-
-```sh
-open "$HOME/Applications/Reading Ruler.app"
-```
+No Intel release file is published yet. Use the GitHub Actions `Local Packaging` workflow, choose `macos` and `x64`, then download the generated `.app.zip` artifact. Unzip it, move `Reading Ruler.app` to `Applications` or `~/Applications`, and open it.
 
 ### Universal macOS Install
 
 Use this when one local app bundle should run on both Apple Silicon and Intel Macs.
 
-No universal macOS release download is published yet. Build the universal local app from the repo:
-
-1. Get the repo using the macOS steps above.
-2. In Terminal, install/check dependencies and the Intel Rust target:
-
-```sh
-./script/check_macos_deps.sh --with-intel-target
-```
-
-3. If anything is missing, let the script try to install it:
-
-```sh
-./script/check_macos_deps.sh --install --with-intel-target
-```
-
-4. Install project dependencies:
-
-```sh
-npm install
-```
-
-5. Build and install:
-
-```sh
-npm run app:package:mac:local -- --target universal --install
-```
-
-6. Open the app:
-
-```sh
-open "$HOME/Applications/Reading Ruler.app"
-```
-
-The local macOS install command copies `Reading Ruler.app` to `~/Applications`, creates a shareable `.app.zip`, writes a SHA-256 checksum, and removes quarantine from the local copy when possible.
+No universal release file is published yet. Use the GitHub Actions `Local Packaging` workflow, choose `macos` and `universal`, then download the generated `.app.zip` artifact. Unzip it, move `Reading Ruler.app` to `Applications` or `~/Applications`, and open it.
 
 ### Windows Install
 
 Use this on Windows for a local unsigned installer.
 
-No Windows release download is published yet. Build the Windows local installer from the repo:
-
-1. Get the repo using the Windows steps above.
-2. In PowerShell, install/check dependencies:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File script/check_windows_deps.ps1
-```
-
-3. If anything is missing, let the script try to install it with `winget`:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File script/check_windows_deps.ps1 -Install
-```
-
-4. Install project dependencies:
-
-```powershell
-npm install
-```
-
-5. Build the default NSIS installer:
-
-```powershell
-npm run app:package:windows:local
-```
-
-6. Run the generated installer from:
-
-```text
-src-tauri\target\release\bundle\
-```
-
-7. If Windows SmartScreen warns that the installer is unsigned, choose the local/internal install option to continue.
-
-To build MSI instead:
-
-```powershell
-npm run app:package:windows:local -- -Bundle msi
-```
-
-The script writes a SHA-256 checksum file next to the generated installer.
-
-### Local macOS DMG
-
-DMGs are local-only for now. Use this only when you specifically need a local DMG test artifact:
-
-```sh
-npm run app:package:mac
-```
-
-Expected local artifacts:
-
-- `src-tauri/target/release/bundle/macos/Reading Ruler.app`
-- `src-tauri/target/release/bundle/dmg/*.dmg`
-
-The packaging script validates the generated app bundle, reports executable architecture, checks code-signing status, and verifies generated DMGs. Keep DMGs local while Developer ID signing is unavailable.
-
-### Signed macOS Distribution Package
-
-Public macOS distribution uses a separate packaging script so local unsigned testing stays simple:
-
-```sh
-npm run app:package:mac:distribution -- --check-prereqs
-```
-
-```sh
-APPLE_SIGNING_IDENTITY="Developer ID Application: Your Name (TEAMID)" \
-  npm run app:package:mac:distribution
-```
-
-To notarize and staple the app and DMG, first store an Apple notarization profile:
-
-```sh
-xcrun notarytool store-credentials reading-ruler-notary
-```
-
-Then run:
-
-```sh
-APPLE_SIGNING_IDENTITY="Developer ID Application: Your Name (TEAMID)" \
-  npm run app:package:mac:distribution -- --notarize reading-ruler-notary
-```
-
-Distribution outputs:
-
-- `src-tauri/target/release/bundle/macos/Reading Ruler_0.1.0_arm64.app.zip`
-- `src-tauri/target/release/bundle/dmg/Reading Ruler_0.1.0_arm64.dmg`
-- `src-tauri/target/release/bundle/Reading Ruler_0.1.0_arm64.sha256`
-
-This machine currently has an `Apple Development` certificate only. A `Developer ID Application` certificate is required before this script can produce a public Gatekeeper-clean build.
-
-The same signed distribution flow is also available as a manual GitHub Actions workflow: `macOS Distribution`. Configure these repository secrets before running it:
-
-- `APPLE_SIGNING_IDENTITY`
-- `APPLE_CERTIFICATE_P12_BASE64`
-- `APPLE_CERTIFICATE_PASSWORD`
-- `KEYCHAIN_PASSWORD`
-- `APPLE_ID`
-- `APPLE_TEAM_ID`
-- `APPLE_APP_SPECIFIC_PASSWORD`
-
-Run the workflow with the release tag to upload to, such as `v0.1.0`. Use an Apple Silicon runner label when producing arm64 artifacts.
+No Windows release file is published yet. Use the GitHub Actions `Local Packaging` workflow, choose `windows`, choose `nsis` or `msi`, then download the generated installer artifact. Run the `.exe` or `.msi` installer. If Windows SmartScreen warns that the installer is unsigned, choose the local/internal install option to continue.
 
 ### Available Installation Files
 
@@ -402,15 +100,6 @@ Download from the current GitHub release:
 - [Reading.Ruler_0.1.0_aarch64.sha256](https://github.com/bilalalissa/Reading-Ruler/releases/download/v0.1.0/Reading.Ruler_0.1.0_aarch64.sha256)
 
 For Apple Silicon, download `Reading.Ruler_0.1.0_aarch64.app.zip`. The checksum file is optional and is used to verify the download. DMGs are kept as local test artifacts until Developer ID signing is available.
-
-New local installation files are generated with:
-
-- `npm run app:package:mac:local -- --target arm64 --install`
-- `npm run app:package:mac:local -- --target x64 --install`
-- `npm run app:package:mac:local -- --target universal --install`
-- `npm run app:package:windows:local`
-
-Use `.app.zip` for macOS local sharing and the generated NSIS/MSI installer for Windows local sharing. Keep DMGs local until Developer ID signing is available.
 
 The manual GitHub Actions workflow `Local Packaging` can also build unsigned local macOS `.app.zip` artifacts and unsigned Windows NSIS/MSI installer artifacts without Apple Developer ID credentials.
 
@@ -479,10 +168,6 @@ Details: [Multi-ruler implementation](docs/MULTI_RULER_IMPLEMENTATION.md)
 
 Unsigned local platform packaging is implemented:
 
-- `npm run app:package:mac:local -- --target arm64 --install`
-- `npm run app:package:mac:local -- --target x64 --install`
-- `npm run app:package:mac:local -- --target universal --install`
-- `npm run app:package:windows:local`
 - manual GitHub Actions workflow `Local Packaging` for unsigned macOS and Windows artifacts
 - Tauri bundling is enabled for macOS `.app` and local DMG targets.
 - A generated app icon set is included.
@@ -490,14 +175,12 @@ Unsigned local platform packaging is implemented:
 - The generated executable is verified as `arm64`.
 - DMG verification is performed with `hdiutil verify`.
 
-Details: [Installation and packaging](docs/INSTALLATION.md)
+Details: [Installation](docs/INSTALLATION.md) and [Development](docs/DEVELOPMENT.md)
 
 ### Signed Distribution Packaging
 
 Signed macOS distribution packaging is implemented:
 
-- `npm run app:package:mac:distribution`
-- preflight check with `npm run app:package:mac:distribution -- --check-prereqs`
 - requires `APPLE_SIGNING_IDENTITY` set to a `Developer ID Application` certificate
 - signs with hardened runtime and timestamp
 - verifies signatures with `codesign` and Gatekeeper assessment with `spctl`
@@ -505,7 +188,7 @@ Signed macOS distribution packaging is implemented:
 - creates release-ready DMG, app zip, and SHA-256 checksum files
 - includes a manual GitHub Actions workflow that can upload signed/notarized artifacts to a release
 
-Details: [Installation and packaging](docs/INSTALLATION.md)
+Details: [Development](docs/DEVELOPMENT.md)
 
 ## Icons
 

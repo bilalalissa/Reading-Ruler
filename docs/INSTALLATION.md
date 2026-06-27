@@ -1,414 +1,118 @@
-# Installation And Packaging
+# Installation
 
-Reading Ruler uses local unsigned installation paths for macOS Apple Silicon, macOS Intel, universal macOS, and Windows while Developer ID signing is unavailable. DMG creation remains available for local macOS testing, but `.app.zip` is the preferred macOS sharing artifact for now.
+Reading Ruler currently uses unsigned local installation files. DMGs remain local test artifacts until Developer ID signing is available.
 
-## Simple Install Flow
+Regular users do not need Rust, Node.js, Cargo, Xcode Command Line Tools, or Visual Studio Build Tools. Those are only needed for source builds and developer runs, which are documented separately in [Development](DEVELOPMENT.md).
 
-Use this order when building locally:
+## Choose The Right File
 
-1. Get the repo onto the machine. The dependency scripts are inside the repo.
-2. Run the dependency checker for your platform.
-3. Let the checker install missing tools when possible, or install them manually.
-4. Run `npm install`.
-5. Build and install the app for your platform.
+- Apple Silicon Mac, such as M1, M2, M3, or newer: download `Reading.Ruler_0.1.0_aarch64.app.zip` from the release.
+- Intel Mac: use the `Local Packaging` GitHub Actions workflow and download the `macos x64` `.app.zip` artifact.
+- One Mac app for both Apple Silicon and Intel: use the `Local Packaging` workflow and download the `macos universal` `.app.zip` artifact.
+- Windows: use the `Local Packaging` workflow and download the `windows nsis` `.exe` artifact or the `windows msi` `.msi` artifact.
 
-## Get The Repo First
+## macOS Apple Silicon
 
-### macOS
+1. Open the GitHub release page:
+   <https://github.com/bilalalissa/Reading-Ruler/releases/tag/v0.1.0>
+2. Download `Reading.Ruler_0.1.0_aarch64.app.zip`.
+3. Optional: download `Reading.Ruler_0.1.0_aarch64.sha256` if you want to verify the file checksum.
+4. Unzip `Reading.Ruler_0.1.0_aarch64.app.zip`.
+5. Move `Reading Ruler.app` to `Applications` or `~/Applications`.
+6. Open `Reading Ruler.app`.
+7. If macOS blocks the unsigned app, Control-click `Reading Ruler.app`, choose `Open`, then confirm.
 
-1. Open the macOS `Terminal` app.
-2. Choose where you want the project folder, for example:
-
-```sh
-cd "$HOME/Downloads"
-```
-
-3. If Git is installed, clone the repo:
-
-```sh
-git clone https://github.com/bilalalissa/Reading-Ruler.git
-cd Reading-Ruler
-```
-
-If Git is not installed, open <https://github.com/bilalalissa/Reading-Ruler>, choose `Code` > `Download ZIP`, unzip it, then in Terminal run `cd` into the unzipped `Reading-Ruler` folder.
-
-### Windows
-
-1. Open `PowerShell`.
-2. Choose where you want the project folder, for example:
-
-```powershell
-cd $HOME\Downloads
-```
-
-3. If Git is installed, clone the repo:
-
-```powershell
-git clone https://github.com/bilalalissa/Reading-Ruler.git
-cd Reading-Ruler
-```
-
-If Git is not installed, open <https://github.com/bilalalissa/Reading-Ruler>, choose `Code` > `Download ZIP`, unzip it, then in PowerShell run `cd` into the unzipped `Reading-Ruler` folder.
-
-## Install Build Dependencies
-
-Run these commands from inside the `Reading-Ruler` repo folder.
-
-### macOS Apple Silicon
-
-In Terminal:
-
-```sh
-./script/check_macos_deps.sh
-```
-
-If the script reports missing tools, let it try to install them:
-
-```sh
-./script/check_macos_deps.sh --install
-```
-
-The script checks:
-
-- Xcode Command Line Tools
-- Rust/Cargo/rustup
-- Node.js/npm
-
-The script can open the Xcode Command Line Tools installer and use Homebrew for Node.js or rustup if Homebrew is installed.
-
-### macOS Intel Or Universal
-
-In Terminal:
-
-```sh
-./script/check_macos_deps.sh --with-intel-target
-```
-
-If the script reports missing tools, let it try to install them:
-
-```sh
-./script/check_macos_deps.sh --install --with-intel-target
-```
-
-This checks the normal macOS dependencies plus the `x86_64-apple-darwin` Rust target needed for Intel/universal builds.
-
-### Windows
-
-In PowerShell:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File script/check_windows_deps.ps1
-```
-
-If the script reports missing tools, let it try to install them with `winget`:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File script/check_windows_deps.ps1 -Install
-```
-
-The script checks:
-
-- Rust/Cargo/rustup with the MSVC toolchain
-- Node.js/npm
-- Visual Studio Build Tools with MSVC
-- Microsoft WebView2 Runtime
-
-### Manual Dependency Install Links
-
-- Rust/Cargo: <https://rustup.rs/>
-- Node.js/npm: <https://nodejs.org/>
-- Xcode Command Line Tools: run `xcode-select --install` in macOS Terminal.
-- Visual Studio Build Tools: <https://visualstudio.microsoft.com/visual-cpp-build-tools/>
-- Microsoft WebView2 Runtime: <https://developer.microsoft.com/microsoft-edge/webview2/>
-
-## macOS Apple Silicon Install
-
-Use this on M1, M2, M3, or newer Apple Silicon Macs.
-
-### Download From GitHub
-
-Download this file from the current release:
-
-- [Reading.Ruler_0.1.0_aarch64.app.zip](https://github.com/bilalalissa/Reading-Ruler/releases/download/v0.1.0/Reading.Ruler_0.1.0_aarch64.app.zip)
-
-Install it:
-
-1. Unzip `Reading.Ruler_0.1.0_aarch64.app.zip`.
-2. Move `Reading Ruler.app` to `Applications` or `~/Applications`.
-3. Open `Reading Ruler.app`.
-4. If macOS blocks the unsigned app, Control-click the app, choose `Open`, then confirm.
-
-For local testing, you can also remove quarantine:
+If the app is still quarantined, open the macOS `Terminal` app and run:
 
 ```sh
 xattr -dr com.apple.quarantine "$HOME/Applications/Reading Ruler.app"
 ```
 
-Optional checksum file:
-
-- [Reading.Ruler_0.1.0_aarch64.sha256](https://github.com/bilalalissa/Reading-Ruler/releases/download/v0.1.0/Reading.Ruler_0.1.0_aarch64.sha256)
-
-### Build From Source
-
-1. Get the repo using the macOS steps above.
-2. In Terminal, install/check dependencies:
-
-```sh
-./script/check_macos_deps.sh
-```
-
-3. If anything is missing, let the script try to install it:
-
-```sh
-./script/check_macos_deps.sh --install
-```
-
-4. Install project dependencies:
-
-```sh
-npm install
-```
-
-5. Build and install the app locally:
-
-```sh
-npm run app:package:mac:local -- --target arm64 --install
-```
-
-6. Open the app:
-
-```sh
-open "$HOME/Applications/Reading Ruler.app"
-```
-
-The app is copied to `~/Applications/Reading Ruler.app`. The generated shareable zip is:
-
-- `src-tauri/target/aarch64-apple-darwin/release/bundle/macos/Reading Ruler_0.1.0_arm64.app.zip`
-
-## macOS Intel Install
-
-Use this on Intel Macs.
-
-No Intel release download is published yet. Build the Intel local app from the repo.
-
-1. Get the repo using the macOS steps above.
-2. In Terminal, install/check dependencies and the Intel Rust target:
-
-```sh
-./script/check_macos_deps.sh --with-intel-target
-```
-
-3. If anything is missing, let the script try to install it:
-
-```sh
-./script/check_macos_deps.sh --install --with-intel-target
-```
-
-4. Install project dependencies:
-
-```sh
-npm install
-```
-
-5. Build and install the app locally:
-
-```sh
-npm run app:package:mac:local -- --target x64 --install
-```
-
-6. Open the app:
-
-```sh
-open "$HOME/Applications/Reading Ruler.app"
-```
-
-The app is copied to `~/Applications/Reading Ruler.app`. The generated shareable zip uses `x64` in the file name.
-
-## Universal macOS Install
-
-Use this when one local app bundle should run on both Apple Silicon and Intel Macs.
-
-No universal macOS release download is published yet. Build the universal local app from the repo.
-
-1. Get the repo using the macOS steps above.
-2. In Terminal, install/check dependencies and the Intel Rust target:
-
-```sh
-./script/check_macos_deps.sh --with-intel-target
-```
-
-3. If anything is missing, let the script try to install it:
-
-```sh
-./script/check_macos_deps.sh --install --with-intel-target
-```
-
-4. Install project dependencies:
-
-```sh
-npm install
-```
-
-5. Build and install the universal app locally:
-
-```sh
-npm run app:package:mac:local -- --target universal --install
-```
-
-6. Open the app:
-
-```sh
-open "$HOME/Applications/Reading Ruler.app"
-```
-
-The app is copied to `~/Applications/Reading Ruler.app`. The generated shareable zip uses `universal` in the file name.
-
-## Windows Install
-
-Use this on Windows for a local unsigned installer.
-
-No Windows release download is published yet. Build the Windows local installer from the repo.
-
-1. Get the repo using the Windows steps above.
-2. In PowerShell, install/check dependencies:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File script/check_windows_deps.ps1
-```
-
-3. If anything is missing, let the script try to install it with `winget`:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File script/check_windows_deps.ps1 -Install
-```
-
-4. Install project dependencies:
-
-```powershell
-npm install
-```
-
-5. Build the default NSIS installer:
-
-```powershell
-npm run app:package:windows:local
-```
-
-6. Run the generated installer from:
-
-```text
-src-tauri\target\release\bundle\
-```
-
-7. If Windows SmartScreen warns that the installer is unsigned, choose the local/internal install option to continue.
-
-To build MSI instead of NSIS:
-
-```powershell
-npm run app:package:windows:local -- -Bundle msi
-```
-
-The script writes a SHA-256 checksum file next to the generated installer.
-
-## Local macOS Artifact Notes
-
-The macOS local install script:
-
-- builds an unsigned `.app`
-- creates a shareable `.app.zip`
-- writes a SHA-256 checksum
-- copies the app to `~/Applications` when `--install` is used
-- removes the quarantine attribute from that local copy when `xattr` is available
-
-## Local macOS DMG
-
-DMGs are local-only for now. Use this only when you specifically need a local DMG test artifact:
-
-```sh
-npm run app:package:mac
-```
-
-Expected local artifacts:
-
-- `src-tauri/target/release/bundle/macos/Reading Ruler.app`
-- `src-tauri/target/release/bundle/dmg/*.dmg`
-
-The packaging script builds with Tauri, validates the app bundle, reports executable architecture, checks code-signing status, and verifies generated DMGs.
-
-## Signed macOS Distribution Package
-
-This path is optional and blocked until a Developer ID certificate and notarization profile are available:
-
-```sh
-npm run app:package:mac:distribution -- --check-prereqs
-```
-
-```sh
-APPLE_SIGNING_IDENTITY="Developer ID Application: Your Name (TEAMID)" \
-  npm run app:package:mac:distribution -- --notarize reading-ruler-notary
-```
-
-The signing identity must be a `Developer ID Application` certificate. `Apple Development` certificates are only suitable for development and do not produce a public Gatekeeper-clean distribution build.
-
-## GitHub Actions Distribution Release
-
-The manual `macOS Distribution` workflow signs, notarizes, staples, checksums, and uploads package files to a GitHub release after Apple credentials are configured.
-
-Required repository secrets:
-
-- `APPLE_SIGNING_IDENTITY`: full Developer ID Application identity name.
-- `APPLE_CERTIFICATE_P12_BASE64`: base64-encoded `.p12` Developer ID certificate.
-- `APPLE_CERTIFICATE_PASSWORD`: password for the `.p12` certificate.
-- `KEYCHAIN_PASSWORD`: temporary CI keychain password.
-- `APPLE_ID`: Apple ID used for notarization.
-- `APPLE_TEAM_ID`: Apple Developer Team ID.
-- `APPLE_APP_SPECIFIC_PASSWORD`: app-specific password for the Apple ID.
+Use `/Applications/Reading Ruler.app` instead if you moved the app to the system Applications folder.
+
+## macOS Intel
+
+No Intel release file is published yet. Use GitHub Actions to create a local unsigned Intel app artifact.
+
+1. Open the repository:
+   <https://github.com/bilalalissa/Reading-Ruler>
+2. Click `Actions`.
+3. Select `Local Packaging`.
+4. Click `Run workflow`.
+5. Set `platform` to `macos`.
+6. Set `macos_target` to `x64`.
+7. Click `Run workflow`.
+8. When the run finishes, open the run and download the `reading-ruler-macos-x64-local` artifact.
+9. Unzip the artifact, then unzip the `.app.zip` inside it.
+10. Move `Reading Ruler.app` to `Applications` or `~/Applications`.
+11. Open `Reading Ruler.app`.
+12. If macOS blocks the unsigned app, Control-click the app, choose `Open`, then confirm.
+
+## Universal macOS
+
+Use this when one downloaded app should run on both Apple Silicon and Intel Macs.
+
+1. Open the repository:
+   <https://github.com/bilalalissa/Reading-Ruler>
+2. Click `Actions`.
+3. Select `Local Packaging`.
+4. Click `Run workflow`.
+5. Set `platform` to `macos`.
+6. Set `macos_target` to `universal`.
+7. Click `Run workflow`.
+8. When the run finishes, open the run and download the `reading-ruler-macos-universal-local` artifact.
+9. Unzip the artifact, then unzip the `.app.zip` inside it.
+10. Move `Reading Ruler.app` to `Applications` or `~/Applications`.
+11. Open `Reading Ruler.app`.
+12. If macOS blocks the unsigned app, Control-click the app, choose `Open`, then confirm.
+
+## Windows
+
+No Windows release file is published yet. Use GitHub Actions to create a local unsigned Windows installer artifact.
+
+1. Open the repository:
+   <https://github.com/bilalalissa/Reading-Ruler>
+2. Click `Actions`.
+3. Select `Local Packaging`.
+4. Click `Run workflow`.
+5. Set `platform` to `windows`.
+6. Set `windows_bundle` to `nsis` for a `.exe` installer, or `msi` for an `.msi` installer.
+7. Click `Run workflow`.
+8. When the run finishes, open the run and download the `reading-ruler-windows-nsis-local` or `reading-ruler-windows-msi-local` artifact.
+9. Unzip the artifact.
+10. Run the downloaded `.exe` or `.msi` installer.
+11. If Windows SmartScreen warns that the installer is unsigned, choose the local/internal install option to continue.
+
+Windows may require Microsoft WebView2 Runtime. Most current Windows systems already have it. If Reading Ruler does not launch and WebView2 is missing, install it from:
+<https://developer.microsoft.com/microsoft-edge/webview2/>
 
 ## Available Installation Files
 
-Download from the current GitHub release:
+Current release downloads:
 
-- [Reading.Ruler_0.1.0_aarch64.app.zip](https://github.com/bilalalissa/Reading-Ruler/releases/download/v0.1.0/Reading.Ruler_0.1.0_aarch64.app.zip)
-- [Reading.Ruler_0.1.0_aarch64.sha256](https://github.com/bilalalissa/Reading-Ruler/releases/download/v0.1.0/Reading.Ruler_0.1.0_aarch64.sha256)
+- `Reading.Ruler_0.1.0_aarch64.app.zip`
+- `Reading.Ruler_0.1.0_aarch64.sha256`
 
-For Apple Silicon, download `Reading.Ruler_0.1.0_aarch64.app.zip`. The checksum file is optional and is used to verify the download. DMGs are kept as local test artifacts until Developer ID signing is available.
+Current GitHub Actions `Local Packaging` artifacts:
 
-New local installation files are generated with:
+- `reading-ruler-macos-arm64-local`
+- `reading-ruler-macos-x64-local`
+- `reading-ruler-macos-universal-local`
+- `reading-ruler-windows-nsis-local`
+- `reading-ruler-windows-msi-local`
 
-- `npm run app:package:mac:local -- --target arm64 --install`
-- `npm run app:package:mac:local -- --target x64 --install`
-- `npm run app:package:mac:local -- --target universal --install`
-- `npm run app:package:windows:local`
+Workflow artifacts expire after GitHub's retention period. If an artifact is missing, run the `Local Packaging` workflow again.
 
-Use `.app.zip` for macOS local sharing and the generated NSIS/MSI installer for Windows local sharing. Keep DMGs local until Developer ID signing is available.
+## DMG Status
 
-## GitHub Actions Local Packaging
+DMG files are kept as local test artifacts while Developer ID signing is unavailable. Use `.app.zip` for unsigned macOS sharing.
 
-The manual `Local Packaging` workflow builds unsigned local artifacts without Apple Developer ID credentials.
-
-Use it when you want GitHub to produce local-share artifacts instead of building on your own machine:
-
-1. Open the repository on GitHub.
-2. Go to `Actions`.
-3. Select `Local Packaging`.
-4. Click `Run workflow`.
-5. Choose `macos` or `windows`.
-6. For macOS, choose `arm64`, `x64`, or `universal`.
-7. For Windows, choose `nsis` or `msi`.
-8. Download the generated workflow artifact after the run finishes.
-
-The macOS output contains `.app.zip` and `.sha256` files. The Windows output contains `.exe` or `.msi` installer files and a `.sha256` file.
-
-## GitHub Repository
-
-The project repository is:
+The most recent local DMG path on this machine was:
 
 ```text
-https://github.com/bilalalissa/Reading-Ruler.git
+/Users/ba/Code/Reading-Ruler/src-tauri/target/release/bundle/dmg/Reading Ruler_0.1.0_aarch64.dmg
 ```
 
-The repository description should be:
+## Source Builds
 
-```text
-Cross-platform desktop reading ruler overlay with multiple customizable rulers, window targeting, and macOS packaging.
-```
+Source builds, local package generation commands, dependency checker scripts, optional development runs, and signed distribution packaging are documented in [Development](DEVELOPMENT.md).
