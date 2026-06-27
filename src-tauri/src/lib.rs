@@ -1,3 +1,4 @@
+#[cfg(target_os = "macos")]
 use core_foundation::{
     array::CFArray,
     base::{CFType, CFTypeRef, TCFType},
@@ -5,6 +6,7 @@ use core_foundation::{
     number::CFNumber,
     string::{CFString, CFStringRef},
 };
+#[cfg(target_os = "macos")]
 use core_graphics::{
     geometry::{CGPoint, CGRect, CGSize},
     window::{
@@ -15,11 +17,11 @@ use core_graphics::{
 };
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+#[cfg(target_os = "macos")]
+use std::{ffi::c_void, ptr};
 use std::{
-    ffi::c_void,
     fs,
     path::{Path, PathBuf},
-    ptr,
     time::{SystemTime, UNIX_EPOCH},
 };
 use tauri::{
@@ -28,6 +30,17 @@ use tauri::{
     WebviewWindowBuilder, WindowEvent,
 };
 use tauri_plugin_global_shortcut::{GlobalShortcutExt, ShortcutState};
+#[cfg(target_os = "windows")]
+use windows::{
+    core::BOOL,
+    Win32::{
+        Foundation::{HWND, LPARAM, RECT},
+        UI::WindowsAndMessaging::{
+            EnumWindows, GetWindowRect, GetWindowTextLengthW, GetWindowTextW,
+            GetWindowThreadProcessId, IsWindowVisible,
+        },
+    },
+};
 
 const MAIN_LABEL: &str = "main";
 const OVERLAY_PREFIX: &str = "overlay-";
@@ -41,12 +54,17 @@ const MENU_TOGGLE_RULER: &str = "toggle_ruler";
 const MENU_RESET_SETTINGS: &str = "reset_settings";
 const MENU_SHOW_HELP: &str = "show_help";
 
+#[cfg(target_os = "macos")]
 type AXUIElementRef = *const c_void;
 
+#[cfg(target_os = "macos")]
 const AX_ERROR_SUCCESS: i32 = 0;
+#[cfg(target_os = "macos")]
 const AX_VALUE_CGPOINT_TYPE: i32 = 1;
+#[cfg(target_os = "macos")]
 const AX_VALUE_CGSIZE_TYPE: i32 = 2;
 
+#[cfg(target_os = "macos")]
 #[link(name = "ApplicationServices", kind = "framework")]
 extern "C" {
     fn AXUIElementCreateApplication(pid: i32) -> AXUIElementRef;
@@ -101,7 +119,7 @@ struct RulerSettings {
     click_through: bool,
     edit_mode: bool,
     monitor_name: Option<String>,
-    target_window_id: Option<u32>,
+    target_window_id: Option<u64>,
     background_image_path: Option<String>,
 }
 
@@ -143,7 +161,7 @@ struct RulerEvent {
 #[derive(Clone, Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 struct TargetWindow {
-    id: u32,
+    id: u64,
     owner_pid: i32,
     owner_name: String,
     title: String,
@@ -460,7 +478,7 @@ fn background_image_data_url(app: AppHandle, ruler_id: String) -> Result<Option<
 fn track_target_window(
     app: AppHandle,
     ruler_id: String,
-    window_id: u32,
+    window_id: u64,
 ) -> Result<TargetTrackStatus, String> {
     let mut settings = load_or_create_app_settings(&app)?;
     let Some(target) = find_target_window(window_id) else {
@@ -751,7 +769,7 @@ fn migrate_flat_settings(value: Value) -> Result<AppSettings, String> {
         click_through: bool,
         edit_mode: bool,
         monitor_name: Option<String>,
-        target_window_id: Option<u32>,
+        target_window_id: Option<u64>,
         background_image_path: Option<String>,
     }
 
@@ -1160,28 +1178,33 @@ fn handle_menu_event(app: &AppHandle, id: &str) {
     }
 }
 
+#[cfg(target_os = "macos")]
 fn cf_key(key: CFStringRef) -> CFString {
     unsafe { CFString::wrap_under_get_rule(key) }
 }
 
+#[cfg(target_os = "macos")]
 fn cf_string_value(dict: &CFDictionary<CFString, CFType>, key: CFStringRef) -> Option<String> {
     dict.find(&cf_key(key))
         .and_then(|value| value.downcast::<CFString>())
         .map(|value| value.to_string())
 }
 
+#[cfg(target_os = "macos")]
 fn cf_i32_value(dict: &CFDictionary<CFString, CFType>, key: CFStringRef) -> Option<i32> {
     dict.find(&cf_key(key))
         .and_then(|value| value.downcast::<CFNumber>())
         .and_then(|value| value.to_i32())
 }
 
+#[cfg(target_os = "macos")]
 fn cf_rect_value(dict: &CFDictionary<CFString, CFType>, key: CFStringRef) -> Option<CGRect> {
     dict.find(&cf_key(key))
         .and_then(|value| value.downcast::<CFDictionary>())
         .and_then(|value| CGRect::from_dict_representation(&value))
 }
 
+#[cfg(target_os = "macos")]
 fn ax_attribute(element: AXUIElementRef, attribute: &str) -> Option<CFType> {
     let attribute = CFString::new(attribute);
     let mut value: CFTypeRef = ptr::null();
@@ -1196,6 +1219,7 @@ fn ax_attribute(element: AXUIElementRef, attribute: &str) -> Option<CFType> {
     }
 }
 
+#[cfg(target_os = "macos")]
 fn ax_string_attribute(element: AXUIElementRef, attribute: &str) -> Option<String> {
     ax_attribute(element, attribute)
         .and_then(|value| value.downcast::<CFString>())
@@ -1204,6 +1228,7 @@ fn ax_string_attribute(element: AXUIElementRef, attribute: &str) -> Option<Strin
         .filter(|value| !value.is_empty())
 }
 
+#[cfg(target_os = "macos")]
 fn ax_point_attribute(element: AXUIElementRef, attribute: &str) -> Option<CGPoint> {
     let value = ax_attribute(element, attribute)?;
     let mut point = CGPoint::new(0.0, 0.0);
@@ -1217,6 +1242,7 @@ fn ax_point_attribute(element: AXUIElementRef, attribute: &str) -> Option<CGPoin
     ok.then_some(point)
 }
 
+#[cfg(target_os = "macos")]
 fn ax_size_attribute(element: AXUIElementRef, attribute: &str) -> Option<CGSize> {
     let value = ax_attribute(element, attribute)?;
     let mut size = CGSize::new(0.0, 0.0);
@@ -1230,10 +1256,12 @@ fn ax_size_attribute(element: AXUIElementRef, attribute: &str) -> Option<CGSize>
     ok.then_some(size)
 }
 
+#[cfg(target_os = "macos")]
 fn close_enough(left: f64, right: f64) -> bool {
     (left - right).abs() <= 8.0
 }
 
+#[cfg(target_os = "macos")]
 fn ax_window_matches_bounds(element: AXUIElementRef, bounds: CGRect) -> bool {
     let Some(position) = ax_point_attribute(element, "AXPosition") else {
         return false;
@@ -1248,6 +1276,7 @@ fn ax_window_matches_bounds(element: AXUIElementRef, bounds: CGRect) -> bool {
         && close_enough(size.height, bounds.size.height)
 }
 
+#[cfg(target_os = "macos")]
 fn accessibility_title_for_window(owner_pid: i32, bounds: CGRect) -> Option<String> {
     let app = unsafe { AXUIElementCreateApplication(owner_pid) };
     if app.is_null() {
@@ -1265,6 +1294,7 @@ fn accessibility_title_for_window(owner_pid: i32, bounds: CGRect) -> Option<Stri
     })
 }
 
+#[cfg(target_os = "macos")]
 fn target_windows() -> Vec<TargetWindow> {
     let options = kCGWindowListOptionOnScreenOnly | kCGWindowListExcludeDesktopElements;
     let array_ref = unsafe { CGWindowListCopyWindowInfo(options, kCGNullWindowID) };
@@ -1284,7 +1314,7 @@ fn target_windows() -> Vec<TargetWindow> {
                 return None;
             }
 
-            let id = cf_i32_value(dict, unsafe { kCGWindowNumber })? as u32;
+            let id = cf_i32_value(dict, unsafe { kCGWindowNumber })? as u64;
             let owner_pid = cf_i32_value(dict, unsafe { kCGWindowOwnerPID })?;
             let owner_name = cf_string_value(dict, unsafe { kCGWindowOwnerName })?;
             if owner_name == "Reading Ruler" || owner_name == "reading-ruler" {
@@ -1315,7 +1345,87 @@ fn target_windows() -> Vec<TargetWindow> {
         .collect()
 }
 
-fn find_target_window(window_id: u32) -> Option<TargetWindow> {
+#[cfg(target_os = "windows")]
+unsafe extern "system" fn enum_windows_proc(hwnd: HWND, lparam: LPARAM) -> BOOL {
+    let windows = &mut *(lparam.0 as *mut Vec<TargetWindow>);
+    if let Some(window) = target_window_from_hwnd(hwnd) {
+        windows.push(window);
+    }
+    BOOL(1)
+}
+
+#[cfg(target_os = "windows")]
+fn window_text(hwnd: HWND) -> Option<String> {
+    let length = unsafe { GetWindowTextLengthW(hwnd) };
+    if length <= 0 {
+        return None;
+    }
+
+    let mut buffer = vec![0u16; length as usize + 1];
+    let copied = unsafe { GetWindowTextW(hwnd, &mut buffer) };
+    if copied <= 0 {
+        return None;
+    }
+
+    let title = String::from_utf16_lossy(&buffer[..copied as usize])
+        .trim()
+        .to_string();
+    (!title.is_empty()).then_some(title)
+}
+
+#[cfg(target_os = "windows")]
+fn target_window_from_hwnd(hwnd: HWND) -> Option<TargetWindow> {
+    if !unsafe { IsWindowVisible(hwnd).as_bool() } {
+        return None;
+    }
+
+    let title = window_text(hwnd)?;
+    let mut process_id = 0u32;
+    unsafe {
+        GetWindowThreadProcessId(hwnd, Some(&mut process_id));
+    }
+    if process_id == std::process::id() {
+        return None;
+    }
+
+    let mut rect = RECT::default();
+    if unsafe { GetWindowRect(hwnd, &mut rect) }.is_err() {
+        return None;
+    }
+
+    let width = f64::from(rect.right - rect.left);
+    let height = f64::from(rect.bottom - rect.top);
+    if width < 120.0 || height < 60.0 {
+        return None;
+    }
+
+    Some(TargetWindow {
+        id: hwnd.0 as usize as u64,
+        owner_pid: process_id as i32,
+        owner_name: format!("Process {process_id}"),
+        title,
+        x: f64::from(rect.left),
+        y: f64::from(rect.top),
+        width,
+        height,
+    })
+}
+
+#[cfg(target_os = "windows")]
+fn target_windows() -> Vec<TargetWindow> {
+    let mut windows = Vec::new();
+    let lparam = LPARAM(&mut windows as *mut Vec<TargetWindow> as isize);
+    let _ = unsafe { EnumWindows(Some(enum_windows_proc), lparam) };
+    windows.truncate(80);
+    windows
+}
+
+#[cfg(not(any(target_os = "macos", target_os = "windows")))]
+fn target_windows() -> Vec<TargetWindow> {
+    Vec::new()
+}
+
+fn find_target_window(window_id: u64) -> Option<TargetWindow> {
     target_windows()
         .into_iter()
         .find(|window| window.id == window_id)

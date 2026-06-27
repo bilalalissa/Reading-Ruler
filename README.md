@@ -465,6 +465,7 @@ The macOS Apple Silicon multi-ruler overlay is implemented:
 - active-ruler controller behavior
 - per-ruler geometry, style, image, target, click-through, edit mode, and visibility
 - exact-window targeted mode with offsets
+- native target-window listing on macOS and Windows
 - direct drag/resize behavior with persistence
 - menu and shortcut control for the active ruler
 - settings migration and reset support
@@ -523,7 +524,7 @@ Developer-only run instructions are in [Development](docs/DEVELOPMENT.md).
 
 - macOS Apple Silicon local packaging is verified on this machine. Intel and universal macOS packaging require installing the `x86_64-apple-darwin` Rust target. Windows packaging must be run on Windows.
 - Targeted window mode is best-effort. If the selected window closes, minimizes, moves to another Space, or is not frontmost, the overlay hides and reports the target state.
-- Target window listing may be limited by macOS privacy protections.
+- Target window listing may be limited by macOS privacy protections or by Windows apps that do not expose normal top-level window titles.
 - Clipboard image import depends on WebView/macOS clipboard access; normal paste in the control panel is also supported.
 - Click-through disables direct overlay interaction until edit mode is enabled again.
 - Public distribution requires a Developer ID certificate and notarization profile; local install paths do not.

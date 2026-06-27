@@ -6,7 +6,7 @@
 - `app/help.html`, `app/help.css`, and `app/help-assets/`: bundled Help window content and screenshots.
 - `app/main.js`: controller logic for active ruler editing, target polling, imports, shortcuts, and settings sync.
 - `app/overlay.html`, `app/overlay.css`, and `app/overlay.js`: per-ruler overlay UI, resize affordances, drag/resize persistence, and visual modes.
-- `src-tauri/src/lib.rs`: Rust backend for settings, overlay windows, menus, shortcuts, image storage, and target-window tracking.
+- `src-tauri/src/lib.rs`: Rust backend for settings, overlay windows, menus, shortcuts, image storage, macOS target-window tracking, and Windows target-window enumeration.
 
 ## Packaging
 
