@@ -1,12 +1,12 @@
 use core_foundation::{
     array::CFArray,
-    base::{CFType, TCFType},
+    base::{CFType, CFTypeRef, TCFType},
     dictionary::CFDictionary,
     number::CFNumber,
     string::{CFString, CFStringRef},
 };
 use core_graphics::{
-    geometry::CGRect,
+    geometry::{CGPoint, CGRect, CGSize},
     window::{
         kCGNullWindowID, kCGWindowBounds, kCGWindowLayer, kCGWindowListExcludeDesktopElements,
         kCGWindowListOptionOnScreenOnly, kCGWindowName, kCGWindowNumber, kCGWindowOwnerName,
@@ -16,8 +16,10 @@ use core_graphics::{
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::{
+    ffi::c_void,
     fs,
     path::{Path, PathBuf},
+    ptr,
     time::{SystemTime, UNIX_EPOCH},
 };
 use tauri::{
@@ -38,6 +40,23 @@ const MENU_HIDE_RULER: &str = "hide_ruler";
 const MENU_TOGGLE_RULER: &str = "toggle_ruler";
 const MENU_RESET_SETTINGS: &str = "reset_settings";
 const MENU_SHOW_HELP: &str = "show_help";
+
+type AXUIElementRef = *const c_void;
+
+const AX_ERROR_SUCCESS: i32 = 0;
+const AX_VALUE_CGPOINT_TYPE: i32 = 1;
+const AX_VALUE_CGSIZE_TYPE: i32 = 2;
+
+#[link(name = "ApplicationServices", kind = "framework")]
+extern "C" {
+    fn AXUIElementCreateApplication(pid: i32) -> AXUIElementRef;
+    fn AXUIElementCopyAttributeValue(
+        element: AXUIElementRef,
+        attribute: CFStringRef,
+        value: *mut CFTypeRef,
+    ) -> i32;
+    fn AXValueGetValue(value: CFTypeRef, value_type: i32, out_value: *mut c_void) -> bool;
+}
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(default)]
@@ -1163,6 +1182,89 @@ fn cf_rect_value(dict: &CFDictionary<CFString, CFType>, key: CFStringRef) -> Opt
         .and_then(|value| CGRect::from_dict_representation(&value))
 }
 
+fn ax_attribute(element: AXUIElementRef, attribute: &str) -> Option<CFType> {
+    let attribute = CFString::new(attribute);
+    let mut value: CFTypeRef = ptr::null();
+    let status = unsafe {
+        AXUIElementCopyAttributeValue(element, attribute.as_concrete_TypeRef(), &mut value)
+    };
+
+    if status == AX_ERROR_SUCCESS && !value.is_null() {
+        Some(unsafe { CFType::wrap_under_create_rule(value) })
+    } else {
+        None
+    }
+}
+
+fn ax_string_attribute(element: AXUIElementRef, attribute: &str) -> Option<String> {
+    ax_attribute(element, attribute)
+        .and_then(|value| value.downcast::<CFString>())
+        .map(|value| value.to_string())
+        .map(|value| value.trim().to_string())
+        .filter(|value| !value.is_empty())
+}
+
+fn ax_point_attribute(element: AXUIElementRef, attribute: &str) -> Option<CGPoint> {
+    let value = ax_attribute(element, attribute)?;
+    let mut point = CGPoint::new(0.0, 0.0);
+    let ok = unsafe {
+        AXValueGetValue(
+            value.as_CFTypeRef(),
+            AX_VALUE_CGPOINT_TYPE,
+            &mut point as *mut CGPoint as *mut c_void,
+        )
+    };
+    ok.then_some(point)
+}
+
+fn ax_size_attribute(element: AXUIElementRef, attribute: &str) -> Option<CGSize> {
+    let value = ax_attribute(element, attribute)?;
+    let mut size = CGSize::new(0.0, 0.0);
+    let ok = unsafe {
+        AXValueGetValue(
+            value.as_CFTypeRef(),
+            AX_VALUE_CGSIZE_TYPE,
+            &mut size as *mut CGSize as *mut c_void,
+        )
+    };
+    ok.then_some(size)
+}
+
+fn close_enough(left: f64, right: f64) -> bool {
+    (left - right).abs() <= 8.0
+}
+
+fn ax_window_matches_bounds(element: AXUIElementRef, bounds: CGRect) -> bool {
+    let Some(position) = ax_point_attribute(element, "AXPosition") else {
+        return false;
+    };
+    let Some(size) = ax_size_attribute(element, "AXSize") else {
+        return false;
+    };
+
+    close_enough(position.x, bounds.origin.x)
+        && close_enough(position.y, bounds.origin.y)
+        && close_enough(size.width, bounds.size.width)
+        && close_enough(size.height, bounds.size.height)
+}
+
+fn accessibility_title_for_window(owner_pid: i32, bounds: CGRect) -> Option<String> {
+    let app = unsafe { AXUIElementCreateApplication(owner_pid) };
+    if app.is_null() {
+        return None;
+    }
+
+    let windows = ax_attribute(app, "AXWindows")?.downcast::<CFArray>()?;
+    windows.iter().find_map(|window| {
+        let element = *window as AXUIElementRef;
+        if ax_window_matches_bounds(element, bounds) {
+            ax_string_attribute(element, "AXTitle")
+        } else {
+            None
+        }
+    })
+}
+
 fn target_windows() -> Vec<TargetWindow> {
     let options = kCGWindowListOptionOnScreenOnly | kCGWindowListExcludeDesktopElements;
     let array_ref = unsafe { CGWindowListCopyWindowInfo(options, kCGNullWindowID) };
@@ -1189,12 +1291,14 @@ fn target_windows() -> Vec<TargetWindow> {
                 return None;
             }
 
-            let title = cf_string_value(dict, unsafe { kCGWindowName })
-                .unwrap_or_else(|| "Window".to_string());
             let bounds = cf_rect_value(dict, unsafe { kCGWindowBounds })?;
             if bounds.size.width < 120.0 || bounds.size.height < 60.0 {
                 return None;
             }
+            let title = cf_string_value(dict, unsafe { kCGWindowName })
+                .filter(|title| !title.trim().is_empty() && title != "Window")
+                .or_else(|| accessibility_title_for_window(owner_pid, bounds))
+                .unwrap_or_else(|| "Untitled window".to_string());
 
             Some(TargetWindow {
                 id,
