@@ -51,84 +51,106 @@ Use multiple rulers when you want separate overlays for different regions, windo
 
 ## Install
 
-### Requirements
+There are two install paths:
 
-- Rust/Cargo.
-- Node.js and npm.
-- macOS builds: Xcode Command Line Tools.
-- Windows builds: Windows, Rust MSVC toolchain, WebView2 Runtime, and Visual Studio Build Tools.
+- **Download the ready-made Apple Silicon app zip** if you are on an M1, M2, M3, or newer Mac.
+- **Build locally from the repo** for macOS Intel, universal macOS, Windows, or when you want the latest source version.
 
-### Check And Install Build Dependencies
+The dependency checker scripts are inside the repo. If you are building locally, get the repo first, then run the checker for your platform.
 
-macOS dependency check:
+### Get The Repo First
+
+Use this before any build-from-source install.
+
+#### macOS
 
 1. Open the macOS `Terminal` app.
-2. Go to the `Reading-Ruler` project folder.
-3. Run this direct script command:
+2. Choose where you want the project folder, for example:
+
+```sh
+cd "$HOME/Downloads"
+```
+
+3. If Git is installed, clone the repo:
+
+```sh
+git clone https://github.com/bilalalissa/Reading-Ruler.git
+cd Reading-Ruler
+```
+
+If Git is not installed, open <https://github.com/bilalalissa/Reading-Ruler>, choose `Code` > `Download ZIP`, unzip it, then in Terminal run `cd` into the unzipped `Reading-Ruler` folder.
+
+#### Windows
+
+1. Open `PowerShell`.
+2. Choose where you want the project folder, for example:
+
+```powershell
+cd $HOME\Downloads
+```
+
+3. If Git is installed, clone the repo:
+
+```powershell
+git clone https://github.com/bilalalissa/Reading-Ruler.git
+cd Reading-Ruler
+```
+
+If Git is not installed, open <https://github.com/bilalalissa/Reading-Ruler>, choose `Code` > `Download ZIP`, unzip it, then in PowerShell run `cd` into the unzipped `Reading-Ruler` folder.
+
+### Install Build Dependencies
+
+Run these commands from inside the `Reading-Ruler` repo folder.
+
+#### macOS Apple Silicon
+
+In Terminal:
 
 ```sh
 ./script/check_macos_deps.sh
 ```
 
-If `npm` is already installed, this equivalent npm command also works:
-
-```sh
-npm run deps:check:mac
-```
-
-For Intel or universal macOS builds, also check the Intel Rust target:
-
-```sh
-npm run deps:check:mac -- --with-intel-target
-```
-
-To let the script try installing missing macOS dependencies:
+If the script reports missing tools, let it try to install them:
 
 ```sh
 ./script/check_macos_deps.sh --install
+```
+
+The script checks Xcode Command Line Tools, Rust/Cargo/rustup, and Node.js/npm. It can open the Xcode Command Line Tools installer and use Homebrew for Node.js or rustup if Homebrew is installed.
+
+#### macOS Intel Or Universal
+
+In Terminal:
+
+```sh
+./script/check_macos_deps.sh --with-intel-target
+```
+
+If the script reports missing tools, let it try to install them:
+
+```sh
 ./script/check_macos_deps.sh --install --with-intel-target
 ```
 
-Equivalent npm commands:
+This checks the normal macOS dependencies plus the `x86_64-apple-darwin` Rust target needed for Intel/universal builds.
 
-```sh
-npm run deps:check:mac -- --install
-npm run deps:check:mac -- --install --with-intel-target
-```
+#### Windows
 
-The macOS script checks Xcode Command Line Tools, Rust/Cargo/rustup, Node.js/npm, and optionally `x86_64-apple-darwin`. It can open the Xcode Command Line Tools installer and use Homebrew for Node.js or rustup if Homebrew is installed. If Homebrew is not installed, use the manual links below.
-
-Windows dependency check:
-
-1. Open `PowerShell`.
-2. Go to the `Reading-Ruler` project folder.
-3. Run this direct script command:
+In PowerShell:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File script/check_windows_deps.ps1
 ```
 
-If `npm` is already installed, this equivalent npm command also works:
-
-```powershell
-npm run deps:check:windows
-```
-
-To let the script try installing missing Windows dependencies with `winget`:
+If the script reports missing tools, let it try to install them with `winget`:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File script/check_windows_deps.ps1 -Install
 ```
 
-Equivalent npm command:
+The script checks Rust/Cargo/rustup with the MSVC toolchain, Node.js/npm, Visual Studio Build Tools with MSVC, and Microsoft WebView2 Runtime.
 
-```powershell
-npm run deps:check:windows -- -Install
-```
-
-The Windows script checks Rust/Cargo/rustup, Node.js/npm, Visual Studio Build Tools with MSVC, and Microsoft WebView2 Runtime.
-
-Manual install links:
+If automatic install is not available, install missing dependencies manually:
 
 - Rust/Cargo: <https://rustup.rs/>
 - Node.js/npm: <https://nodejs.org/>
@@ -177,38 +199,32 @@ xattr -dr com.apple.quarantine "$HOME/Applications/Reading Ruler.app"
 
 Build locally instead:
 
-1. Open the macOS `Terminal` app.
-2. Go to the project folder. If you downloaded the repo ZIP, use the unzipped folder. If you cloned the repo, run:
-
-```sh
-cd Reading-Ruler
-```
-
-3. Check dependencies:
+1. Get the repo using the macOS steps above.
+2. In Terminal, install/check dependencies:
 
 ```sh
 ./script/check_macos_deps.sh
 ```
 
-4. If anything is missing, either install it manually from the links above or let the script try:
+3. If anything is missing, let the script try to install it:
 
 ```sh
 ./script/check_macos_deps.sh --install
 ```
 
-5. Install project dependencies:
+4. Install project dependencies:
 
 ```sh
 npm install
 ```
 
-6. Build and install:
+5. Build and install:
 
 ```sh
 npm run app:package:mac:local -- --target arm64 --install
 ```
 
-7. Open the app:
+6. Open the app:
 
 ```sh
 open "$HOME/Applications/Reading Ruler.app"
@@ -220,41 +236,32 @@ Use this on Intel Macs.
 
 No Intel release download is published yet. Build the Intel local app from the repo:
 
-1. Download the repo from <https://github.com/bilalalissa/Reading-Ruler> using `Code` > `Download ZIP`, or clone it:
-2. Open the macOS `Terminal` app.
-3. If you chose `Download ZIP`, go to the unzipped project folder in Terminal. If you use Git, run:
-
-```sh
-git clone https://github.com/bilalalissa/Reading-Ruler.git
-cd Reading-Ruler
-```
-
-4. Check dependencies and the Intel Rust target in Terminal:
+1. Get the repo using the macOS steps above.
+2. In Terminal, install/check dependencies and the Intel Rust target:
 
 ```sh
 ./script/check_macos_deps.sh --with-intel-target
 ```
 
-5. If anything is missing, either install it manually from the links above or let the script try:
+3. If anything is missing, let the script try to install it:
 
 ```sh
 ./script/check_macos_deps.sh --install --with-intel-target
 ```
 
-6. Install project dependencies and the Intel Rust target in Terminal:
+4. Install project dependencies:
 
 ```sh
 npm install
-rustup target add x86_64-apple-darwin
 ```
 
-7. Build and install in Terminal:
+5. Build and install:
 
 ```sh
 npm run app:package:mac:local -- --target x64 --install
 ```
 
-8. Open the app:
+6. Open the app:
 
 ```sh
 open "$HOME/Applications/Reading Ruler.app"
@@ -266,41 +273,32 @@ Use this when one local app bundle should run on both Apple Silicon and Intel Ma
 
 No universal macOS release download is published yet. Build the universal local app from the repo:
 
-1. Download the repo from <https://github.com/bilalalissa/Reading-Ruler> using `Code` > `Download ZIP`, or clone it:
-2. Open the macOS `Terminal` app.
-3. If you chose `Download ZIP`, go to the unzipped project folder in Terminal. If you use Git, run:
-
-```sh
-git clone https://github.com/bilalalissa/Reading-Ruler.git
-cd Reading-Ruler
-```
-
-4. Check dependencies and the Intel Rust target in Terminal:
+1. Get the repo using the macOS steps above.
+2. In Terminal, install/check dependencies and the Intel Rust target:
 
 ```sh
 ./script/check_macos_deps.sh --with-intel-target
 ```
 
-5. If anything is missing, either install it manually from the links above or let the script try:
+3. If anything is missing, let the script try to install it:
 
 ```sh
 ./script/check_macos_deps.sh --install --with-intel-target
 ```
 
-6. Install project dependencies and the Intel Rust target in Terminal:
+4. Install project dependencies:
 
 ```sh
 npm install
-rustup target add x86_64-apple-darwin
 ```
 
-7. Build and install in Terminal:
+5. Build and install:
 
 ```sh
 npm run app:package:mac:local -- --target universal --install
 ```
 
-8. Open the app:
+6. Open the app:
 
 ```sh
 open "$HOME/Applications/Reading Ruler.app"
@@ -314,46 +312,38 @@ Use this on Windows for a local unsigned installer.
 
 No Windows release download is published yet. Build the Windows local installer from the repo:
 
-1. Download the repo from <https://github.com/bilalalissa/Reading-Ruler> using `Code` > `Download ZIP`, or clone it:
-2. Open `PowerShell`.
-3. If you chose `Download ZIP`, go to the unzipped project folder in PowerShell. If you use Git, run:
-
-```powershell
-git clone https://github.com/bilalalissa/Reading-Ruler.git
-cd Reading-Ruler
-```
-
-4. Check dependencies in PowerShell:
+1. Get the repo using the Windows steps above.
+2. In PowerShell, install/check dependencies:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File script/check_windows_deps.ps1
 ```
 
-5. If anything is missing, either install it manually from the links above or let the script try with `winget`:
+3. If anything is missing, let the script try to install it with `winget`:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File script/check_windows_deps.ps1 -Install
 ```
 
-6. Install project dependencies in PowerShell:
+4. Install project dependencies:
 
 ```powershell
 npm install
 ```
 
-7. Build the default NSIS installer in PowerShell:
+5. Build the default NSIS installer:
 
 ```powershell
 npm run app:package:windows:local
 ```
 
-8. Run the generated installer from:
+6. Run the generated installer from:
 
 ```text
 src-tauri\target\release\bundle\
 ```
 
-9. If Windows SmartScreen warns that the installer is unsigned, choose the local/internal install option to continue.
+7. If Windows SmartScreen warns that the installer is unsigned, choose the local/internal install option to continue.
 
 To build MSI instead:
 
