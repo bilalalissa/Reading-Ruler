@@ -18,7 +18,9 @@
     "build": "cargo build --manifest-path src-tauri/Cargo.toml",
     "app:build": "tauri build",
     "app:package:mac": "./script/build_macos_app.sh",
-    "app:package:mac:distribution": "./script/package_macos_distribution.sh"
+    "app:package:mac:local": "./script/package_macos_local.sh",
+    "app:package:mac:distribution": "./script/package_macos_distribution.sh",
+    "app:package:windows:local": "powershell -ExecutionPolicy Bypass -File script/package_windows_local.ps1"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2.11.3"

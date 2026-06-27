@@ -2,7 +2,7 @@
 
 Reading Ruler is a cross-platform desktop reading ruler overlay with multiple customizable rulers, window targeting, and macOS packaging.
 
-It helps keep your place while reading dense text, documentation, spreadsheets, PDFs, browser pages, or side-by-side windows. The current implementation targets macOS Apple Silicon first.
+It helps keep your place while reading dense text, documentation, spreadsheets, PDFs, browser pages, or side-by-side windows. Local unsigned install paths are provided for macOS Apple Silicon, macOS Intel, and Windows.
 
 ![Reading Ruler whole-screen overlay scenario](docs/screenshots/whole-screen-reading.png)
 
@@ -24,7 +24,9 @@ License: MIT
 - Global shortcut, default `Control+Alt+R`, for toggling the active ruler.
 - macOS app menu actions for recovering the control panel and showing, hiding, toggling, or resetting the active ruler.
 - Settings are persisted in the OS user config directory and restored on launch.
-- Unsigned local `.app` and DMG packaging for macOS Apple Silicon testing.
+- Unsigned local `.app` zip/install packaging for macOS Apple Silicon, macOS Intel, and universal macOS builds.
+- Unsigned Windows local installer packaging helper for NSIS or MSI builds.
+- Local DMG packaging remains available for macOS testing, but DMGs are not the primary release path while Developer ID signing is unavailable.
 - Developer ID distribution packaging workflow with hardened runtime, optional notarization, stapling, and checksum generation.
 
 ## Screenshots
@@ -51,10 +53,10 @@ Use multiple rulers when you want separate overlays for different regions, windo
 
 ### Requirements
 
-- macOS on Apple Silicon for the current packaged build path.
 - Rust/Cargo.
 - Node.js and npm.
-- Xcode Command Line Tools.
+- macOS builds: Xcode Command Line Tools.
+- Windows builds: Windows, Rust MSVC toolchain, WebView2 Runtime, and Visual Studio Build Tools.
 
 ### Development Run
 
@@ -69,7 +71,56 @@ Use verification mode to build, launch, and confirm the process stays running:
 ./script/build_and_run.sh --verify
 ```
 
-### Unsigned macOS App And DMG
+### Local macOS Install Without Developer ID
+
+Apple Silicon:
+
+```sh
+npm run app:package:mac:local -- --target arm64 --install
+```
+
+Intel Mac:
+
+```sh
+rustup target add x86_64-apple-darwin
+npm run app:package:mac:local -- --target x64 --install
+```
+
+Universal macOS app:
+
+```sh
+rustup target add x86_64-apple-darwin
+npm run app:package:mac:local -- --target universal --install
+```
+
+The `--install` option copies `Reading Ruler.app` to `~/Applications` and removes the quarantine attribute from that local copy when `xattr` is available. This avoids Developer ID, notarization, and public DMG signing for local use.
+
+Local macOS outputs:
+
+- `src-tauri/target/aarch64-apple-darwin/release/bundle/macos/Reading Ruler.app`
+- `src-tauri/target/aarch64-apple-darwin/release/bundle/macos/Reading Ruler_0.1.0_arm64.app.zip`
+- `src-tauri/target/aarch64-apple-darwin/release/bundle/Reading Ruler_0.1.0_arm64.sha256`
+
+Use `x64` or `universal` in the file names for Intel or universal builds.
+
+### Local Windows Install Without Code Signing
+
+Run on Windows:
+
+```powershell
+npm install
+npm run app:package:windows:local
+```
+
+By default this builds an unsigned NSIS installer. To build MSI instead:
+
+```powershell
+npm run app:package:windows:local -- -Bundle msi
+```
+
+Windows outputs are under `src-tauri\target\release\bundle\`, with a SHA-256 checksum file next to the generated installer. Windows may show a SmartScreen warning because the installer is unsigned; use this path for local testing and internal installs.
+
+### Local macOS DMG
 
 ```sh
 npm run app:package:mac
@@ -80,7 +131,7 @@ Expected local artifacts:
 - `src-tauri/target/release/bundle/macos/Reading Ruler.app`
 - `src-tauri/target/release/bundle/dmg/*.dmg`
 
-The packaging script validates the generated app bundle, reports executable architecture, checks code-signing status, and verifies generated DMGs. Local unsigned builds are suitable for development and local testing.
+The packaging script validates the generated app bundle, reports executable architecture, checks code-signing status, and verifies generated DMGs. Keep DMGs local while Developer ID signing is unavailable.
 
 Public distribution still needs Developer ID signing, hardened runtime, and notarization credentials.
 
@@ -132,18 +183,20 @@ Run the workflow with the release tag to upload to, such as `v0.1.0`. Use an App
 
 ### Available Installation Files
 
-The latest Apple Silicon installation files are attached to the `v0.1.0` GitHub release:
+The current GitHub release keeps the original unsigned Apple Silicon artifacts:
 
 - [Reading.Ruler_0.1.0_aarch64.dmg](https://github.com/bilalalissa/Reading-Ruler/releases/download/v0.1.0/Reading.Ruler_0.1.0_aarch64.dmg)
 - [Reading.Ruler_0.1.0_aarch64.app.zip](https://github.com/bilalalissa/Reading-Ruler/releases/download/v0.1.0/Reading.Ruler_0.1.0_aarch64.app.zip)
 - [Reading.Ruler_0.1.0_aarch64.sha256](https://github.com/bilalalissa/Reading-Ruler/releases/download/v0.1.0/Reading.Ruler_0.1.0_aarch64.sha256)
 
-After `npm run app:package:mac`, the same local installation files are available at:
+New local installation files are generated with:
 
-- `src-tauri/target/release/bundle/macos/Reading Ruler.app`
-- `src-tauri/target/release/bundle/dmg/Reading Ruler_0.1.0_aarch64.dmg`
+- `npm run app:package:mac:local -- --target arm64 --install`
+- `npm run app:package:mac:local -- --target x64 --install`
+- `npm run app:package:mac:local -- --target universal --install`
+- `npm run app:package:windows:local`
 
-Use the DMG for drag-and-drop installation testing. Use the `.app` bundle or `.app.zip` for direct launch testing. The current package is unsigned/ad-hoc; public distribution still needs Developer ID signing and notarization.
+Use `.app.zip` for macOS local sharing and the generated NSIS/MSI installer for Windows local sharing. Keep DMGs local until Developer ID signing is available.
 
 ## How To Use
 
@@ -205,11 +258,15 @@ The macOS Apple Silicon multi-ruler overlay is implemented:
 
 Details: [Multi-ruler implementation](docs/MULTI_RULER_IMPLEMENTATION.md)
 
-### Local Apple Silicon Packaging
+### Local Platform Packaging
 
-Unsigned local macOS Apple Silicon packaging is implemented:
+Unsigned local platform packaging is implemented:
 
-- Tauri bundling is enabled for `.app` and DMG targets.
+- `npm run app:package:mac:local -- --target arm64 --install`
+- `npm run app:package:mac:local -- --target x64 --install`
+- `npm run app:package:mac:local -- --target universal --install`
+- `npm run app:package:windows:local`
+- Tauri bundling is enabled for macOS `.app` and local DMG targets.
 - A generated app icon set is included.
 - `script/build_macos_app.sh` builds and validates the package.
 - The generated executable is verified as `arm64`.
@@ -248,10 +305,10 @@ See [Related files](docs/RELATED_FILES.md) for the main controller, overlay, bac
 
 ## Current Limitations
 
-- macOS Apple Silicon is the only verified package target.
+- macOS Apple Silicon local packaging is verified on this machine. Intel and universal macOS packaging require installing the `x86_64-apple-darwin` Rust target. Windows packaging must be run on Windows.
 - Targeted window mode is best-effort. If the selected window closes, minimizes, moves to another Space, or is not frontmost, the overlay hides and reports the target state.
 - Target window listing may be limited by macOS privacy protections.
 - Clipboard image import depends on WebView/macOS clipboard access; normal paste in the control panel is also supported.
 - Click-through disables direct overlay interaction until edit mode is enabled again.
-- Public distribution requires a Developer ID certificate and notarization profile; this machine currently has an Apple Development certificate only.
-- Future work can add macOS Intel and Windows installers.
+- Public distribution requires a Developer ID certificate and notarization profile; local install paths do not.
+- Public signed installers and auto-update can be added after Developer ID signing is available.

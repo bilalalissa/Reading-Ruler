@@ -13,6 +13,8 @@
 - `src-tauri/tauri.conf.json`: Tauri app, window, bundle, icon, and DMG configuration.
 - `script/build_and_run.sh`: development build/run helper.
 - `script/build_macos_app.sh`: unsigned macOS `.app` and DMG packaging validation.
+- `script/package_macos_local.sh`: unsigned local macOS `.app` zip/install helper for Apple Silicon, Intel, and universal builds when the matching Rust targets are installed.
+- `script/package_windows_local.ps1`: unsigned Windows NSIS/MSI local packaging helper.
 - `script/package_macos_distribution.sh`: Developer ID signing, hardened runtime, optional notarization, stapling, DMG creation, and checksum generation for macOS distribution.
 - `.github/workflows/macos-distribution.yml`: manual GitHub Actions workflow for signed/notarized macOS release artifacts.
 - `package.json` and `package-lock.json`: npm scripts and local Tauri CLI dependency.

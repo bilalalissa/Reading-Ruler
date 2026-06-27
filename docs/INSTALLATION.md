@@ -1,6 +1,6 @@
 # Installation And Packaging
 
-Reading Ruler currently targets local macOS Apple Silicon testing.
+Reading Ruler uses local unsigned installation paths for macOS Apple Silicon, macOS Intel, universal macOS, and Windows while Developer ID signing is unavailable. DMG creation remains available for local macOS testing, but `.app.zip` is the preferred macOS sharing artifact for now.
 
 ## Development Run
 
@@ -8,30 +8,86 @@ Reading Ruler currently targets local macOS Apple Silicon testing.
 ./script/build_and_run.sh
 ```
 
-Use the verification mode to build, launch, and confirm the process is running:
+Use verification mode to build, launch, and confirm the process is running:
 
 ```sh
 ./script/build_and_run.sh --verify
 ```
 
-## Unsigned macOS Package
+## macOS Local Install Without Developer ID
+
+Apple Silicon:
+
+```sh
+npm install
+npm run app:package:mac:local -- --target arm64 --install
+```
+
+Intel Mac:
+
+```sh
+npm install
+rustup target add x86_64-apple-darwin
+npm run app:package:mac:local -- --target x64 --install
+```
+
+Universal macOS app:
+
+```sh
+npm install
+rustup target add x86_64-apple-darwin
+npm run app:package:mac:local -- --target universal --install
+```
+
+The `--install` option copies `Reading Ruler.app` to `~/Applications` and removes the quarantine attribute from that local copy when `xattr` is available.
+
+Expected Apple Silicon local artifacts:
+
+- `src-tauri/target/aarch64-apple-darwin/release/bundle/macos/Reading Ruler.app`
+- `src-tauri/target/aarch64-apple-darwin/release/bundle/macos/Reading Ruler_0.1.0_arm64.app.zip`
+- `src-tauri/target/aarch64-apple-darwin/release/bundle/Reading Ruler_0.1.0_arm64.sha256`
+
+Use `x64` or `universal` in the file names for Intel or universal builds.
+
+## Windows Local Install Without Code Signing
+
+Run on Windows:
+
+```powershell
+npm install
+npm run app:package:windows:local
+```
+
+By default this builds an unsigned NSIS installer. To build MSI instead:
+
+```powershell
+npm run app:package:windows:local -- -Bundle msi
+```
+
+Windows artifacts are written under:
+
+- `src-tauri\target\release\bundle\`
+
+The script also writes a SHA-256 checksum file next to the generated installer. Windows may show a SmartScreen warning because the installer is unsigned; this path is intended for local testing and internal installs.
+
+## Local macOS DMG
+
+Keep DMGs local until Developer ID signing is available:
 
 ```sh
 npm run app:package:mac
 ```
 
-The packaging script builds with Tauri, validates the generated app bundle, reports executable architecture, checks code-signing status, and verifies generated DMGs.
-
-Expected artifacts:
+Expected local artifacts:
 
 - `src-tauri/target/release/bundle/macos/Reading Ruler.app`
 - `src-tauri/target/release/bundle/dmg/*.dmg`
 
-Local unsigned builds are suitable for development and local testing. Public distribution still needs Developer ID signing, hardened runtime, and notarization.
+The packaging script builds with Tauri, validates the app bundle, reports executable architecture, checks code-signing status, and verifies generated DMGs.
 
 ## Signed macOS Distribution Package
 
-Use the distribution package script when a public macOS build is needed:
+This path is optional and blocked until a Developer ID certificate and notarization profile are available:
 
 ```sh
 npm run app:package:mac:distribution -- --check-prereqs
@@ -39,37 +95,14 @@ npm run app:package:mac:distribution -- --check-prereqs
 
 ```sh
 APPLE_SIGNING_IDENTITY="Developer ID Application: Your Name (TEAMID)" \
-  npm run app:package:mac:distribution
+  npm run app:package:mac:distribution -- --notarize reading-ruler-notary
 ```
 
 The signing identity must be a `Developer ID Application` certificate. `Apple Development` certificates are only suitable for development and do not produce a public Gatekeeper-clean distribution build.
 
-To notarize, store a notary profile once:
-
-```sh
-xcrun notarytool store-credentials reading-ruler-notary
-```
-
-Then run:
-
-```sh
-APPLE_SIGNING_IDENTITY="Developer ID Application: Your Name (TEAMID)" \
-  npm run app:package:mac:distribution -- --notarize reading-ruler-notary
-```
-
-The script validates the app bundle, signs the app with hardened runtime and timestamp, verifies the signature, creates an app zip, optionally notarizes and staples the app, creates a signed DMG, optionally notarizes and staples the DMG, verifies the DMG, and writes SHA-256 checksums.
-
-Distribution outputs:
-
-- `src-tauri/target/release/bundle/macos/Reading Ruler_0.1.0_arm64.app.zip`
-- `src-tauri/target/release/bundle/dmg/Reading Ruler_0.1.0_arm64.dmg`
-- `src-tauri/target/release/bundle/Reading Ruler_0.1.0_arm64.sha256`
-
-Current credential status on this machine: only an `Apple Development` identity is installed. Install a `Developer ID Application` certificate and create a notary profile before running the signed distribution path for release.
-
 ## GitHub Actions Distribution Release
 
-The manual `macOS Distribution` workflow signs, notarizes, staples, checksums, and uploads package files to a GitHub release.
+The manual `macOS Distribution` workflow signs, notarizes, staples, checksums, and uploads package files to a GitHub release after Apple credentials are configured.
 
 Required repository secrets:
 
@@ -81,29 +114,22 @@ Required repository secrets:
 - `APPLE_TEAM_ID`: Apple Developer Team ID.
 - `APPLE_APP_SPECIFIC_PASSWORD`: app-specific password for the Apple ID.
 
-Run the workflow manually with the release tag, for example `v0.1.0`. Use an Apple Silicon runner label when producing arm64 artifacts. The workflow intentionally fails before packaging if signing or notarization secrets are missing.
-
 ## Available Installation Files
 
-The latest Apple Silicon installation files are attached to the `v0.1.0` GitHub release:
+The current GitHub release keeps the original unsigned Apple Silicon artifacts:
 
 - [Reading.Ruler_0.1.0_aarch64.dmg](https://github.com/bilalalissa/Reading-Ruler/releases/download/v0.1.0/Reading.Ruler_0.1.0_aarch64.dmg)
 - [Reading.Ruler_0.1.0_aarch64.app.zip](https://github.com/bilalalissa/Reading-Ruler/releases/download/v0.1.0/Reading.Ruler_0.1.0_aarch64.app.zip)
 - [Reading.Ruler_0.1.0_aarch64.sha256](https://github.com/bilalalissa/Reading-Ruler/releases/download/v0.1.0/Reading.Ruler_0.1.0_aarch64.sha256)
 
-After a successful package build, the same local installation files are available:
+New local installation files are generated with:
 
-- `src-tauri/target/release/bundle/macos/Reading Ruler.app`
-- `src-tauri/target/release/bundle/dmg/Reading Ruler_0.1.0_aarch64.dmg`
+- `npm run app:package:mac:local -- --target arm64 --install`
+- `npm run app:package:mac:local -- --target x64 --install`
+- `npm run app:package:mac:local -- --target universal --install`
+- `npm run app:package:windows:local`
 
-Use the DMG for drag-and-drop installation testing. Use the `.app` bundle or `.app.zip` for direct launch testing. The current package is unsigned/ad-hoc; public distribution still needs Developer ID signing and notarization.
-
-The local Apple Silicon package is finished when `npm run app:package:mac` reports:
-
-- app bundle generated
-- `Info.plist` lint passes
-- executable architecture is `arm64`
-- DMG verification is valid
+Use `.app.zip` for macOS local sharing and the generated NSIS/MSI installer for Windows local sharing. Keep DMGs local until Developer ID signing is available.
 
 ## GitHub Repository
 
