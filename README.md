@@ -25,6 +25,7 @@ License: MIT
 - macOS app menu actions for recovering the control panel and showing, hiding, toggling, or resetting the active ruler.
 - Settings are persisted in the OS user config directory and restored on launch.
 - Unsigned local `.app` and DMG packaging for macOS Apple Silicon testing.
+- Developer ID distribution packaging workflow with hardened runtime, optional notarization, stapling, and checksum generation.
 
 ## Screenshots
 
@@ -82,6 +83,36 @@ Expected local artifacts:
 The packaging script validates the generated app bundle, reports executable architecture, checks code-signing status, and verifies generated DMGs. Local unsigned builds are suitable for development and local testing.
 
 Public distribution still needs Developer ID signing, hardened runtime, and notarization credentials.
+
+### Signed macOS Distribution Package
+
+Public macOS distribution uses a separate packaging script so local unsigned testing stays simple:
+
+```sh
+APPLE_SIGNING_IDENTITY="Developer ID Application: Your Name (TEAMID)" \
+  npm run app:package:mac:distribution
+```
+
+To notarize and staple the app and DMG, first store an Apple notarization profile:
+
+```sh
+xcrun notarytool store-credentials reading-ruler-notary
+```
+
+Then run:
+
+```sh
+APPLE_SIGNING_IDENTITY="Developer ID Application: Your Name (TEAMID)" \
+  npm run app:package:mac:distribution -- --notarize reading-ruler-notary
+```
+
+Distribution outputs:
+
+- `src-tauri/target/release/bundle/macos/Reading Ruler_0.1.0_arm64.app.zip`
+- `src-tauri/target/release/bundle/dmg/Reading Ruler_0.1.0_arm64.dmg`
+- `src-tauri/target/release/bundle/Reading Ruler_0.1.0_arm64.sha256`
+
+This machine currently has an `Apple Development` certificate only. A `Developer ID Application` certificate is required before this script can produce a public Gatekeeper-clean build.
 
 ### Available Installation Files
 
@@ -170,6 +201,19 @@ Unsigned local macOS Apple Silicon packaging is implemented:
 
 Details: [Installation and packaging](docs/INSTALLATION.md)
 
+### Signed Distribution Packaging
+
+Signed macOS distribution packaging is implemented:
+
+- `npm run app:package:mac:distribution`
+- requires `APPLE_SIGNING_IDENTITY` set to a `Developer ID Application` certificate
+- signs with hardened runtime and timestamp
+- verifies signatures with `codesign` and Gatekeeper assessment with `spctl`
+- optionally notarizes and staples the app and DMG through `xcrun notarytool`
+- creates release-ready DMG, app zip, and SHA-256 checksum files
+
+Details: [Installation and packaging](docs/INSTALLATION.md)
+
 ## Icons
 
 The source icon is `src-tauri/icons/icon-source.png`. Regenerate the Tauri icon set with:
@@ -191,5 +235,5 @@ See [Related files](docs/RELATED_FILES.md) for the main controller, overlay, bac
 - Target window listing may be limited by macOS privacy protections.
 - Clipboard image import depends on WebView/macOS clipboard access; normal paste in the control panel is also supported.
 - Click-through disables direct overlay interaction until edit mode is enabled again.
-- Public distribution still needs Developer ID signing, hardened runtime, and notarization.
+- Public distribution requires a Developer ID certificate and notarization profile; this machine currently has an Apple Development certificate only.
 - Future work can add macOS Intel and Windows installers.

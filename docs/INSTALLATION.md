@@ -29,6 +29,40 @@ Expected artifacts:
 
 Local unsigned builds are suitable for development and local testing. Public distribution still needs Developer ID signing, hardened runtime, and notarization.
 
+## Signed macOS Distribution Package
+
+Use the distribution package script when a public macOS build is needed:
+
+```sh
+APPLE_SIGNING_IDENTITY="Developer ID Application: Your Name (TEAMID)" \
+  npm run app:package:mac:distribution
+```
+
+The signing identity must be a `Developer ID Application` certificate. `Apple Development` certificates are only suitable for development and do not produce a public Gatekeeper-clean distribution build.
+
+To notarize, store a notary profile once:
+
+```sh
+xcrun notarytool store-credentials reading-ruler-notary
+```
+
+Then run:
+
+```sh
+APPLE_SIGNING_IDENTITY="Developer ID Application: Your Name (TEAMID)" \
+  npm run app:package:mac:distribution -- --notarize reading-ruler-notary
+```
+
+The script validates the app bundle, signs the app with hardened runtime and timestamp, verifies the signature, creates an app zip, optionally notarizes and staples the app, creates a signed DMG, optionally notarizes and staples the DMG, verifies the DMG, and writes SHA-256 checksums.
+
+Distribution outputs:
+
+- `src-tauri/target/release/bundle/macos/Reading Ruler_0.1.0_arm64.app.zip`
+- `src-tauri/target/release/bundle/dmg/Reading Ruler_0.1.0_arm64.dmg`
+- `src-tauri/target/release/bundle/Reading Ruler_0.1.0_arm64.sha256`
+
+Current credential status on this machine: only an `Apple Development` identity is installed. Install a `Developer ID Application` certificate and create a notary profile before running the signed distribution path for release.
+
 ## Available Installation Files
 
 The latest Apple Silicon installation files are attached to the `v0.1.0` GitHub release:
