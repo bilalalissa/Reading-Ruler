@@ -60,67 +60,177 @@ Use multiple rulers when you want separate overlays for different regions, windo
 
 ### Development Run
 
+1. Install dependencies:
+
 ```sh
 npm install
+```
+
+2. Build and run:
+
+```sh
 ./script/build_and_run.sh
 ```
 
-Use verification mode to build, launch, and confirm the process stays running:
+3. Optional: verify the app stays running:
 
 ```sh
 ./script/build_and_run.sh --verify
 ```
 
-### Local macOS Install Without Developer ID
+### macOS Apple Silicon Install
 
-Apple Silicon:
+Use this on M1, M2, M3, or newer Apple Silicon Macs.
+
+Download from the GitHub release:
+
+- [Reading.Ruler_0.1.0_aarch64.app.zip](https://github.com/bilalalissa/Reading-Ruler/releases/download/v0.1.0/Reading.Ruler_0.1.0_aarch64.app.zip)
+
+Install from the downloaded file:
+
+1. Unzip `Reading.Ruler_0.1.0_aarch64.app.zip`.
+2. Move `Reading Ruler.app` to `Applications` or `~/Applications`.
+3. Open `Reading Ruler.app`.
+4. If macOS blocks the unsigned app, Control-click the app, choose `Open`, then confirm. For local testing you can also remove quarantine:
+
+```sh
+xattr -dr com.apple.quarantine "$HOME/Applications/Reading Ruler.app"
+```
+
+Build locally instead:
+
+1. Install Rust/Cargo, Node.js/npm, and Xcode Command Line Tools.
+2. Install dependencies:
+
+```sh
+npm install
+```
+
+3. Build and install:
 
 ```sh
 npm run app:package:mac:local -- --target arm64 --install
 ```
 
-Intel Mac:
+4. Open the app:
 
 ```sh
+open "$HOME/Applications/Reading Ruler.app"
+```
+
+### macOS Intel Install
+
+Use this on Intel Macs.
+
+No Intel release download is published yet. Build the Intel local app from the repo:
+
+1. Download the repo from <https://github.com/bilalalissa/Reading-Ruler> using `Code` > `Download ZIP`, or clone it:
+
+```sh
+git clone https://github.com/bilalalissa/Reading-Ruler.git
+cd Reading-Ruler
+```
+
+2. Install Rust/Cargo, Node.js/npm, and Xcode Command Line Tools.
+3. Install dependencies and the Intel Rust target:
+
+```sh
+npm install
 rustup target add x86_64-apple-darwin
+```
+
+4. Build and install:
+
+```sh
 npm run app:package:mac:local -- --target x64 --install
 ```
 
-Universal macOS app:
+5. Open the app:
 
 ```sh
+open "$HOME/Applications/Reading Ruler.app"
+```
+
+### Universal macOS Install
+
+Use this when one local app bundle should run on both Apple Silicon and Intel Macs.
+
+No universal macOS release download is published yet. Build the universal local app from the repo:
+
+1. Download the repo from <https://github.com/bilalalissa/Reading-Ruler> using `Code` > `Download ZIP`, or clone it:
+
+```sh
+git clone https://github.com/bilalalissa/Reading-Ruler.git
+cd Reading-Ruler
+```
+
+2. Install Rust/Cargo, Node.js/npm, and Xcode Command Line Tools.
+3. Install dependencies and the Intel Rust target:
+
+```sh
+npm install
 rustup target add x86_64-apple-darwin
+```
+
+4. Build and install:
+
+```sh
 npm run app:package:mac:local -- --target universal --install
 ```
 
-The `--install` option copies `Reading Ruler.app` to `~/Applications` and removes the quarantine attribute from that local copy when `xattr` is available. This avoids Developer ID, notarization, and public DMG signing for local use.
+5. Open the app:
 
-Local macOS outputs:
+```sh
+open "$HOME/Applications/Reading Ruler.app"
+```
 
-- `src-tauri/target/aarch64-apple-darwin/release/bundle/macos/Reading Ruler.app`
-- `src-tauri/target/aarch64-apple-darwin/release/bundle/macos/Reading Ruler_0.1.0_arm64.app.zip`
-- `src-tauri/target/aarch64-apple-darwin/release/bundle/Reading Ruler_0.1.0_arm64.sha256`
+The local macOS install command copies `Reading Ruler.app` to `~/Applications`, creates a shareable `.app.zip`, writes a SHA-256 checksum, and removes quarantine from the local copy when possible.
 
-Use `x64` or `universal` in the file names for Intel or universal builds.
+### Windows Install
 
-### Local Windows Install Without Code Signing
+Use this on Windows for a local unsigned installer.
 
-Run on Windows:
+No Windows release download is published yet. Build the Windows local installer from the repo:
+
+1. Download the repo from <https://github.com/bilalalissa/Reading-Ruler> using `Code` > `Download ZIP`, or clone it:
+
+```powershell
+git clone https://github.com/bilalalissa/Reading-Ruler.git
+cd Reading-Ruler
+```
+
+2. Install Rust/Cargo with the MSVC toolchain, Node.js/npm, Microsoft WebView2 Runtime, and Visual Studio Build Tools.
+3. Install dependencies:
 
 ```powershell
 npm install
+```
+
+4. Build the default NSIS installer:
+
+```powershell
 npm run app:package:windows:local
 ```
 
-By default this builds an unsigned NSIS installer. To build MSI instead:
+5. Run the generated installer from:
+
+```text
+src-tauri\target\release\bundle\
+```
+
+6. If Windows SmartScreen warns that the installer is unsigned, choose the local/internal install option to continue.
+
+To build MSI instead:
 
 ```powershell
 npm run app:package:windows:local -- -Bundle msi
 ```
 
-Windows outputs are under `src-tauri\target\release\bundle\`, with a SHA-256 checksum file next to the generated installer. Windows may show a SmartScreen warning because the installer is unsigned; use this path for local testing and internal installs.
+The script writes a SHA-256 checksum file next to the generated installer.
 
 ### Local macOS DMG
+
+DMGs are local-only for now. Use this only when you specifically need a local DMG test artifact:
 
 ```sh
 npm run app:package:mac
@@ -132,8 +242,6 @@ Expected local artifacts:
 - `src-tauri/target/release/bundle/dmg/*.dmg`
 
 The packaging script validates the generated app bundle, reports executable architecture, checks code-signing status, and verifies generated DMGs. Keep DMGs local while Developer ID signing is unavailable.
-
-Public distribution still needs Developer ID signing, hardened runtime, and notarization credentials.
 
 ### Signed macOS Distribution Package
 
@@ -183,11 +291,13 @@ Run the workflow with the release tag to upload to, such as `v0.1.0`. Use an App
 
 ### Available Installation Files
 
-The current GitHub release keeps the original unsigned Apple Silicon artifacts:
+Download from the current GitHub release:
 
 - [Reading.Ruler_0.1.0_aarch64.dmg](https://github.com/bilalalissa/Reading-Ruler/releases/download/v0.1.0/Reading.Ruler_0.1.0_aarch64.dmg)
 - [Reading.Ruler_0.1.0_aarch64.app.zip](https://github.com/bilalalissa/Reading-Ruler/releases/download/v0.1.0/Reading.Ruler_0.1.0_aarch64.app.zip)
 - [Reading.Ruler_0.1.0_aarch64.sha256](https://github.com/bilalalissa/Reading-Ruler/releases/download/v0.1.0/Reading.Ruler_0.1.0_aarch64.sha256)
+
+For Apple Silicon, download `Reading.Ruler_0.1.0_aarch64.app.zip` first. Use the DMG only for local DMG testing. The checksum file is optional and is used to verify the download.
 
 New local installation files are generated with:
 
