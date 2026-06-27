@@ -29,6 +29,15 @@ Expected artifacts:
 
 Local unsigned builds are suitable for development and local testing. Public distribution still needs Developer ID signing, hardened runtime, and notarization.
 
+## Available Installation Files
+
+After a successful package build, these local installation files are available:
+
+- `src-tauri/target/release/bundle/macos/Reading Ruler.app`
+- `src-tauri/target/release/bundle/dmg/Reading Ruler_0.1.0_aarch64.dmg`
+
+Use the DMG for local drag-and-drop installation testing. Use the `.app` bundle for direct local launch testing.
+
 The local Apple Silicon package is finished when `npm run app:package:mac` reports:
 
 - app bundle generated

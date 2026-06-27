@@ -14,7 +14,7 @@ License: MIT
 
 - Multiple independent rulers, each with its own geometry, style, target, image, click-through state, and visibility.
 - Active-ruler controller with add, duplicate, rename, delete, select, show, and hide controls.
-- Direct on-screen movement and resizing by dragging the ruler body, edges, corners, visible grips, or rail.
+- Direct on-screen movement and resizing by dragging the ruler body, edges, or corners.
 - Whole-screen mode for a selected/saved display position.
 - Targeted app/window mode that tracks the selected exact window with saved offsets.
 - Style controls for border thickness/color, background color, opacity, pattern spacing, and body mode.
@@ -83,6 +83,15 @@ The packaging script validates the generated app bundle, reports executable arch
 
 Public distribution still needs Developer ID signing, hardened runtime, and notarization credentials.
 
+### Available Installation Files
+
+After `npm run app:package:mac`, the currently available local installation files are:
+
+- `src-tauri/target/release/bundle/macos/Reading Ruler.app`
+- `src-tauri/target/release/bundle/dmg/Reading Ruler_0.1.0_aarch64.dmg`
+
+Use the DMG for local drag-and-drop installation testing. Use the `.app` bundle for direct local launch testing.
+
 ## How To Use
 
 ### Scenario: Read A Long Article Or PDF
@@ -91,7 +100,7 @@ Public distribution still needs Developer ID signing, hardened runtime, and nota
 2. Keep `Mode` set to `Whole screen`.
 3. Click `Show ruler`.
 4. Drag the ruler body over the line or paragraph you are reading.
-5. Drag an edge, corner, grip, or rail to resize it.
+5. Drag an edge or corner to resize it.
 6. Adjust background opacity, body mode, and pattern until the text remains readable.
 
 ### Scenario: Track One Browser Or App Window

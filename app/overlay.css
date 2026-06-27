@@ -37,13 +37,8 @@ body {
 
 .ruler {
   position: relative;
-  display: grid;
-  grid-template-columns: 44px 1fr 44px auto;
-  align-items: center;
-  gap: 16px;
   width: 100vw;
   height: 100vh;
-  padding: 0 24px;
   border: var(--border-thickness) solid var(--border-color);
   border-radius: 8px;
   background: var(--background-fill);
@@ -163,76 +158,6 @@ body {
 
 .ruler:active {
   cursor: grabbing;
-}
-
-.ruler-grip {
-  display: grid;
-  place-items: center;
-  gap: 5px;
-  width: 44px;
-  min-height: min(72px, calc(100vh - 16px));
-  padding: 8px 10px;
-  border: 2px solid color-mix(in srgb, var(--border-color) 58%, transparent);
-  border-radius: 12px;
-  background:
-    radial-gradient(var(--border-color) 2.5px, transparent 2.5px) 9px 10px / 11px 11px,
-    color-mix(in srgb, var(--background-fill) 64%, transparent);
-  cursor: ew-resize;
-  box-shadow:
-    inset 0 0 0 1px color-mix(in srgb, white 28%, transparent),
-    0 2px 8px color-mix(in srgb, var(--border-color) 24%, transparent);
-}
-
-.ruler-grip span {
-  display: block;
-  width: 18px;
-  height: 3px;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--border-color) 76%, CanvasText 10%);
-  box-shadow: 0 8px 0 color-mix(in srgb, var(--border-color) 50%, transparent);
-}
-
-.ruler-line {
-  min-height: 24px;
-  border: 2px solid color-mix(in srgb, var(--border-color) 52%, transparent);
-  border-radius: 99px;
-  background:
-    linear-gradient(
-      90deg,
-      transparent 0,
-      transparent 12px,
-      color-mix(in srgb, var(--border-color) 62%, transparent) 12px,
-      color-mix(in srgb, var(--border-color) 62%, transparent) 16px,
-      transparent 16px,
-      transparent 28px
-    ),
-    color-mix(in srgb, var(--background-fill) 62%, transparent);
-  background-size: 28px 100%;
-  cursor: ew-resize;
-  box-shadow:
-    inset 0 0 0 1px color-mix(in srgb, white 28%, transparent),
-    0 2px 8px color-mix(in srgb, var(--border-color) 18%, transparent);
-}
-
-.drag-label {
-  white-space: nowrap;
-  cursor: grab;
-}
-
-.resize-visual {
-  border-radius: 6px;
-  outline: 0 solid transparent;
-  transition:
-    filter 120ms ease,
-    outline-color 120ms ease,
-    outline-width 120ms ease;
-}
-
-.resize-visual:hover,
-.resize-visual:focus-visible {
-  filter: saturate(150%) brightness(1.12);
-  outline: 4px solid color-mix(in srgb, var(--border-color) 48%, transparent);
-  outline-offset: 4px;
 }
 
 .resize-handle {
