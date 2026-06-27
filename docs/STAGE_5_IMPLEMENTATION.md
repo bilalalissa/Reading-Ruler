@@ -15,6 +15,17 @@ Stage 5 focuses on the macOS Apple Silicon multi-ruler prototype: each ruler own
 - Click-through can be enabled while edit mode keeps overlays draggable/resizable.
 - Settings migrate from the previous flat settings shape into the multi-ruler document.
 
+## Verification
+
+Stage 5 is considered satisfied when these checks pass:
+
+- `node --check app/main.js`
+- `node --check app/overlay.js`
+- `npm run build`
+- `./script/build_and_run.sh --verify`
+
+The README includes scenario screenshots for the controller, whole-screen reading, and multiple rulers.
+
 ## Related Files
 
 - `src-tauri/src/lib.rs` owns settings, ruler window creation, target tracking, global shortcut, menu commands, and image persistence.
@@ -22,3 +33,4 @@ Stage 5 focuses on the macOS Apple Silicon multi-ruler prototype: each ruler own
 - `app/overlay.js` owns per-overlay selection, drag/resize handling, style application, and geometry persistence.
 - `app/index.html`, `app/styles.css`, `app/overlay.html`, and `app/overlay.css` define the controller and overlay UI.
 - `src-tauri/icons/icon-source.png` is the 1024px source for the generated Tauri icon set.
+- `docs/screenshots/` contains README screenshots and scenario images.

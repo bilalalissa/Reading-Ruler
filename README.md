@@ -2,67 +2,157 @@
 
 Reading Ruler is a cross-platform desktop reading ruler overlay with multiple customizable rulers, window targeting, and macOS packaging.
 
-Stage 6 targets macOS Apple Silicon packaging for the multi-ruler overlay prototype:
+It helps keep your place while reading dense text, documentation, spreadsheets, PDFs, browser pages, or side-by-side windows. The current implementation targets macOS Apple Silicon first.
 
-- control panel window
-- multiple independent draggable translucent ruler overlays
-- show/hide control
-- default `Control+Alt+R` shortcut, when the global shortcut plugin can register it
-- border thickness and color controls
-- background color and transparency controls
-- solid, dotted, striped, and grid pattern controls with adjustable spacing
-- transparent and edge-only ruler body modes
-- persisted image backgrounds imported from file or pasted from clipboard
-- exact width, height, X, and Y fields
-- direct on-screen resize handles on the overlay
-- visible in-ruler grips and rail resize affordances
-- whole-screen and targeted app/window modes
-- targeted mode follows the selected window using saved user offsets
-- active ruler selector with add, duplicate, rename, and delete controls
-- per-ruler geometry, color, pattern, image, click-through, and target settings
-- configurable show/hide shortcut
-- macOS app menu actions to recover the control panel and show/hide the ruler
-- click-through mode with a separate edit mode for moving/resizing
-- reset-to-defaults
-- basic monitor selection for placing the overlay on a display
-- persisted settings restored on app restart
-- unsigned local macOS `.app` and DMG packaging workflow
-- custom generated Tauri icon set
-
-Later stages add Developer ID signing/notarization, macOS Intel support, and Windows support.
+![Reading Ruler whole-screen overlay scenario](docs/screenshots/whole-screen-reading.png)
 
 Repository: <https://github.com/bilalalissa/Reading-Ruler.git>
 
 License: MIT
 
-## Run
+## Features
+
+- Multiple independent rulers, each with its own geometry, style, target, image, click-through state, and visibility.
+- Active-ruler controller with add, duplicate, rename, delete, select, show, and hide controls.
+- Direct on-screen movement and resizing by dragging the ruler body, edges, corners, visible grips, or rail.
+- Whole-screen mode for a selected/saved display position.
+- Targeted app/window mode that tracks the selected exact window with saved offsets.
+- Style controls for border thickness/color, background color, opacity, pattern spacing, and body mode.
+- Body modes: solid, dotted, striped, grid, transparent, edge-only variants, and image background.
+- Image backgrounds from imported files or clipboard paste.
+- Click-through mode with a separate edit mode so the ruler can stop intercepting mouse input during reading.
+- Global shortcut, default `Control+Alt+R`, for toggling the active ruler.
+- macOS app menu actions for recovering the control panel and showing, hiding, toggling, or resetting the active ruler.
+- Settings are persisted in the OS user config directory and restored on launch.
+- Unsigned local `.app` and DMG packaging for macOS Apple Silicon testing.
+
+## Screenshots
+
+### Control Panel
+
+Use the control panel to choose the active ruler, edit its properties, target a window, import/paste images, configure click-through, and package the same settings across restarts.
+
+![Reading Ruler control panel](docs/screenshots/control-panel.png)
+
+### Whole-Screen Reading
+
+Use whole-screen mode when you want a ruler that floats over the current display and stays where you place it.
+
+![Whole-screen reading ruler scenario](docs/screenshots/whole-screen-reading.png)
+
+### Multiple Rulers
+
+Use multiple rulers when you want separate overlays for different regions, windows, monitors, colors, or reading tasks.
+
+![Multiple independent rulers scenario](docs/screenshots/multiple-rulers.png)
+
+## Install
+
+### Requirements
+
+- macOS on Apple Silicon for the current packaged build path.
+- Rust/Cargo.
+- Node.js and npm.
+- Xcode Command Line Tools.
+
+### Development Run
 
 ```sh
+npm install
 ./script/build_and_run.sh
 ```
 
-Use `./script/build_and_run.sh --verify` to build, launch, and confirm that the process is running.
+Use verification mode to build, launch, and confirm the process stays running:
 
-Settings are stored in the OS app config directory for `com.readingruler.prototype`.
+```sh
+./script/build_and_run.sh --verify
+```
 
-## Package
+### Unsigned macOS App And DMG
 
 ```sh
 npm run app:package:mac
 ```
-
-The packaging script builds with Tauri, validates the generated app bundle, reports the executable architecture, checks code-signing status, and verifies any generated DMG.
 
 Expected local artifacts:
 
 - `src-tauri/target/release/bundle/macos/Reading Ruler.app`
 - `src-tauri/target/release/bundle/dmg/*.dmg`
 
-## Docs
+The packaging script validates the generated app bundle, reports executable architecture, checks code-signing status, and verifies generated DMGs. Local unsigned builds are suitable for development and local testing.
 
-- [Stage 5 implementation](docs/STAGE_5_IMPLEMENTATION.md)
-- [Installation and packaging](docs/INSTALLATION.md)
-- [Related files](docs/RELATED_FILES.md)
+Public distribution still needs Developer ID signing, hardened runtime, and notarization credentials.
+
+## How To Use
+
+### Scenario: Read A Long Article Or PDF
+
+1. Open Reading Ruler.
+2. Keep `Mode` set to `Whole screen`.
+3. Click `Show ruler`.
+4. Drag the ruler body over the line or paragraph you are reading.
+5. Drag an edge, corner, grip, or rail to resize it.
+6. Adjust background opacity, body mode, and pattern until the text remains readable.
+
+### Scenario: Track One Browser Or App Window
+
+1. Set `Mode` to `Target app/window`.
+2. Click `Refresh targets`.
+3. Pick the exact target window from the target list.
+4. Show the ruler and position it over the reading area.
+5. Move or resize the target window. The ruler follows using the saved offsets.
+
+Targeting is exact-window based. If an app has multiple windows, only the selected window should keep the ruler active.
+
+### Scenario: Use Multiple Rulers
+
+1. Click `Add` to create a second ruler, or `Duplicate` to copy the active ruler.
+2. Select a ruler in the `Selected ruler` dropdown.
+3. Change size, position, style, image, target, or visibility.
+4. Switch back to another ruler. Its saved properties are restored without changing the other rulers.
+
+The global shortcut toggles only the active selected ruler.
+
+### Scenario: Read Without Blocking Mouse Clicks
+
+1. Turn on `Click-through`.
+2. Turn off `Edit overlay` while reading so mouse input passes through the ruler.
+3. Turn `Edit overlay` back on when you need to drag or resize the ruler again.
+
+### Scenario: Use A Custom Image Background
+
+1. Choose `Image` as the body mode, or import/paste an image.
+2. Use `Import image` for a file or `Paste image from clipboard` for clipboard content.
+3. The image is copied into the app config directory and restored on restart.
+4. Use `Clear image` to return to non-image body modes.
+
+## Stage Status
+
+### Stage 5: Satisfied
+
+Stage 5 covers the macOS Apple Silicon multi-ruler prototype and is implemented:
+
+- independent ruler settings and overlay windows
+- active-ruler controller behavior
+- per-ruler geometry, style, image, target, click-through, edit mode, and visibility
+- exact-window targeted mode with offsets
+- direct drag/resize behavior with persistence
+- menu and shortcut control for the active ruler
+- settings migration and reset support
+
+Details: [Stage 5 implementation](docs/STAGE_5_IMPLEMENTATION.md)
+
+### Stage 6: Finished For Local Apple Silicon Packaging
+
+Stage 6 covers unsigned local macOS Apple Silicon packaging and is implemented:
+
+- Tauri bundling is enabled for `.app` and DMG targets.
+- A generated app icon set is included.
+- `script/build_macos_app.sh` builds and validates the package.
+- The generated executable is verified as `arm64`.
+- DMG verification is performed with `hdiutil verify`.
+
+Details: [Installation and packaging](docs/INSTALLATION.md)
 
 ## Icons
 
@@ -72,17 +162,18 @@ The source icon is `src-tauri/icons/icon-source.png`. Regenerate the Tauri icon 
 npx tauri icon src-tauri/icons/icon-source.png
 ```
 
-## Stage 6 Limitations
+The generated files include `icon.icns`, `icon.ico`, bundle PNGs, and platform icon assets.
 
-- The control panel edits the active selected ruler only.
-- The global shortcut toggles the active selected ruler only.
-- Dragging is enabled by clicking and dragging the ruler itself, and the updated position is saved.
-- Resizing is enabled by dragging the ruler's edge/corner handles or the visible grips/rail, and the updated size is saved.
+## Related Files
+
+See [Related files](docs/RELATED_FILES.md) for the main controller, overlay, backend, packaging, icon, and metadata files.
+
+## Current Limitations
+
+- macOS Apple Silicon is the only verified package target.
 - Targeted window mode is best-effort. If the selected window closes, minimizes, moves to another Space, or is not frontmost, the overlay hides and reports the target state.
-- When an app has multiple windows, only the selected target window is tracked; other windows from the same app do not keep the overlay visible.
-- In targeted mode, manual size and position edits are saved as offsets from the target window.
 - Target window listing may be limited by macOS privacy protections.
 - Clipboard image import depends on WebView/macOS clipboard access; normal paste in the control panel is also supported.
-- Click-through disables direct overlay interaction until Edit overlay is turned back on in the control panel.
-- Local unsigned packaging is available for Apple Silicon testing.
-- Public distribution still needs Developer ID signing, hardened runtime, and notarization credentials.
+- Click-through disables direct overlay interaction until edit mode is enabled again.
+- Public distribution still needs Developer ID signing, hardened runtime, and notarization.
+- Later stages can add macOS Intel and Windows installers.
