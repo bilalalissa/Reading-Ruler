@@ -1,8 +1,8 @@
-# Stage 5 Implementation
+# Multi-Ruler Implementation
 
 Reading Ruler is a cross-platform desktop reading ruler overlay with multiple customizable rulers, window targeting, and macOS packaging.
 
-Stage 5 focuses on the macOS Apple Silicon multi-ruler prototype: each ruler owns its own geometry, colors, body mode, image background, click-through/edit state, target window, offsets, and visibility. The controller edits only the active ruler, and clicking or dragging a ruler selects it.
+The macOS Apple Silicon multi-ruler implementation lets each ruler own its own geometry, colors, body mode, image background, click-through/edit state, target window, offsets, and visibility. The controller edits only the active ruler, and clicking or dragging a ruler selects it.
 
 ## Implemented Behavior
 
@@ -17,7 +17,7 @@ Stage 5 focuses on the macOS Apple Silicon multi-ruler prototype: each ruler own
 
 ## Verification
 
-Stage 5 is considered satisfied when these checks pass:
+The multi-ruler implementation is considered verified when these checks pass:
 
 - `node --check app/main.js`
 - `node --check app/overlay.js`

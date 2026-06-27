@@ -37,6 +37,7 @@ const MENU_SHOW_RULER: &str = "show_ruler";
 const MENU_HIDE_RULER: &str = "hide_ruler";
 const MENU_TOGGLE_RULER: &str = "toggle_ruler";
 const MENU_RESET_SETTINGS: &str = "reset_settings";
+const MENU_SHOW_HELP: &str = "show_help";
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(default)]
@@ -1057,6 +1058,25 @@ fn show_main_window(app: &AppHandle) -> Result<(), String> {
     window.set_focus().map_err(|error| error.to_string())
 }
 
+fn show_help_window(app: &AppHandle) -> Result<(), String> {
+    if let Some(window) = app.get_webview_window("help") {
+        window.show().map_err(|error| error.to_string())?;
+        return window.set_focus().map_err(|error| error.to_string());
+    }
+
+    WebviewWindowBuilder::new(app, "help", WebviewUrl::App("help.html".into()))
+        .title("Reading Ruler Help")
+        .inner_size(980.0, 760.0)
+        .min_inner_size(520.0, 520.0)
+        .center()
+        .resizable(true)
+        .decorations(true)
+        .transparent(false)
+        .build()
+        .map_err(|error| error.to_string())?;
+    Ok(())
+}
+
 fn setup_app_menu(app: &App) -> tauri::Result<()> {
     let app_menu = SubmenuBuilder::new(app, "Reading Ruler")
         .about(None)
@@ -1079,9 +1099,13 @@ fn setup_app_menu(app: &App) -> tauri::Result<()> {
         .separator()
         .select_all()
         .build()?;
+    let help_menu = SubmenuBuilder::new(app, "Help")
+        .text(MENU_SHOW_HELP, "Reading Ruler Help")
+        .build()?;
     let menu = MenuBuilder::new(app)
         .item(&app_menu)
         .item(&edit_menu)
+        .item(&help_menu)
         .build()?;
     app.set_menu(menu)?;
     Ok(())
@@ -1109,6 +1133,9 @@ fn handle_menu_event(app: &AppHandle, id: &str) {
         }
         MENU_RESET_SETTINGS => {
             let _ = reset_active_ruler(app.clone());
+        }
+        MENU_SHOW_HELP => {
+            let _ = show_help_window(app);
         }
         _ => {}
     }
@@ -1201,7 +1228,7 @@ pub fn run() {
             handle_menu_event(app, event.id().as_ref());
         })
         .on_window_event(|window, event| {
-            if window.label() == MAIN_LABEL {
+            if window.label() == MAIN_LABEL || window.label() == "help" {
                 if let WindowEvent::CloseRequested { api, .. } = event {
                     api.prevent_close();
                     let _ = window.hide();

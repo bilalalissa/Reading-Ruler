@@ -29,7 +29,7 @@ Expected artifacts:
 
 Local unsigned builds are suitable for development and local testing. Public distribution still needs Developer ID signing, hardened runtime, and notarization.
 
-The Stage 6 package is finished for local Apple Silicon use when `npm run app:package:mac` reports:
+The local Apple Silicon package is finished when `npm run app:package:mac` reports:
 
 - app bundle generated
 - `Info.plist` lint passes

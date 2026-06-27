@@ -126,11 +126,11 @@ The global shortcut toggles only the active selected ruler.
 3. The image is copied into the app config directory and restored on restart.
 4. Use `Clear image` to return to non-image body modes.
 
-## Stage Status
+## Implementation Status
 
-### Stage 5: Satisfied
+### Multi-Ruler Overlay
 
-Stage 5 covers the macOS Apple Silicon multi-ruler prototype and is implemented:
+The macOS Apple Silicon multi-ruler overlay is implemented:
 
 - independent ruler settings and overlay windows
 - active-ruler controller behavior
@@ -139,12 +139,13 @@ Stage 5 covers the macOS Apple Silicon multi-ruler prototype and is implemented:
 - direct drag/resize behavior with persistence
 - menu and shortcut control for the active ruler
 - settings migration and reset support
+- bundled Help menu with feature explanations and screenshots
 
-Details: [Stage 5 implementation](docs/STAGE_5_IMPLEMENTATION.md)
+Details: [Multi-ruler implementation](docs/MULTI_RULER_IMPLEMENTATION.md)
 
-### Stage 6: Finished For Local Apple Silicon Packaging
+### Local Apple Silicon Packaging
 
-Stage 6 covers unsigned local macOS Apple Silicon packaging and is implemented:
+Unsigned local macOS Apple Silicon packaging is implemented:
 
 - Tauri bundling is enabled for `.app` and DMG targets.
 - A generated app icon set is included.
@@ -176,4 +177,4 @@ See [Related files](docs/RELATED_FILES.md) for the main controller, overlay, bac
 - Clipboard image import depends on WebView/macOS clipboard access; normal paste in the control panel is also supported.
 - Click-through disables direct overlay interaction until edit mode is enabled again.
 - Public distribution still needs Developer ID signing, hardened runtime, and notarization.
-- Later stages can add macOS Intel and Windows installers.
+- Future work can add macOS Intel and Windows installers.

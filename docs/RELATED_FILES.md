@@ -3,6 +3,7 @@
 ## Application
 
 - `app/index.html` and `app/styles.css`: controller window UI and styling.
+- `app/help.html`, `app/help.css`, and `app/help-assets/`: bundled Help window content and screenshots.
 - `app/main.js`: controller logic for active ruler editing, target polling, imports, shortcuts, and settings sync.
 - `app/overlay.html`, `app/overlay.css`, and `app/overlay.js`: per-ruler overlay UI, resize affordances, drag/resize persistence, and visual modes.
 - `src-tauri/src/lib.rs`: Rust backend for settings, overlay windows, menus, shortcuts, image storage, and target-window tracking.
@@ -25,6 +26,6 @@
 
 ## Project Metadata
 
-- `README.md`: project description, run/package instructions, stage status, and limitations.
+- `README.md`: project description, run/package instructions, implementation status, and limitations.
 - `LICENSE`: MIT License.
 - `.gitignore`: excludes generated build outputs and local dependencies.
