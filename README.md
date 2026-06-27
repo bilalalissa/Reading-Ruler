@@ -118,6 +118,18 @@ Distribution outputs:
 
 This machine currently has an `Apple Development` certificate only. A `Developer ID Application` certificate is required before this script can produce a public Gatekeeper-clean build.
 
+The same signed distribution flow is also available as a manual GitHub Actions workflow: `macOS Distribution`. Configure these repository secrets before running it:
+
+- `APPLE_SIGNING_IDENTITY`
+- `APPLE_CERTIFICATE_P12_BASE64`
+- `APPLE_CERTIFICATE_PASSWORD`
+- `KEYCHAIN_PASSWORD`
+- `APPLE_ID`
+- `APPLE_TEAM_ID`
+- `APPLE_APP_SPECIFIC_PASSWORD`
+
+Run the workflow with the release tag to upload to, such as `v0.1.0`. Use an Apple Silicon runner label when producing arm64 artifacts.
+
 ### Available Installation Files
 
 The latest Apple Silicon installation files are attached to the `v0.1.0` GitHub release:
@@ -216,6 +228,7 @@ Signed macOS distribution packaging is implemented:
 - verifies signatures with `codesign` and Gatekeeper assessment with `spctl`
 - optionally notarizes and staples the app and DMG through `xcrun notarytool`
 - creates release-ready DMG, app zip, and SHA-256 checksum files
+- includes a manual GitHub Actions workflow that can upload signed/notarized artifacts to a release
 
 Details: [Installation and packaging](docs/INSTALLATION.md)
 

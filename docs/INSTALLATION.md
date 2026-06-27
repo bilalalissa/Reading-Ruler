@@ -67,6 +67,22 @@ Distribution outputs:
 
 Current credential status on this machine: only an `Apple Development` identity is installed. Install a `Developer ID Application` certificate and create a notary profile before running the signed distribution path for release.
 
+## GitHub Actions Distribution Release
+
+The manual `macOS Distribution` workflow signs, notarizes, staples, checksums, and uploads package files to a GitHub release.
+
+Required repository secrets:
+
+- `APPLE_SIGNING_IDENTITY`: full Developer ID Application identity name.
+- `APPLE_CERTIFICATE_P12_BASE64`: base64-encoded `.p12` Developer ID certificate.
+- `APPLE_CERTIFICATE_PASSWORD`: password for the `.p12` certificate.
+- `KEYCHAIN_PASSWORD`: temporary CI keychain password.
+- `APPLE_ID`: Apple ID used for notarization.
+- `APPLE_TEAM_ID`: Apple Developer Team ID.
+- `APPLE_APP_SPECIFIC_PASSWORD`: app-specific password for the Apple ID.
+
+Run the workflow manually with the release tag, for example `v0.1.0`. Use an Apple Silicon runner label when producing arm64 artifacts. The workflow intentionally fails before packaging if signing or notarization secrets are missing.
+
 ## Available Installation Files
 
 The latest Apple Silicon installation files are attached to the `v0.1.0` GitHub release:

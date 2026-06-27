@@ -14,6 +14,7 @@
 - `script/build_and_run.sh`: development build/run helper.
 - `script/build_macos_app.sh`: unsigned macOS `.app` and DMG packaging validation.
 - `script/package_macos_distribution.sh`: Developer ID signing, hardened runtime, optional notarization, stapling, DMG creation, and checksum generation for macOS distribution.
+- `.github/workflows/macos-distribution.yml`: manual GitHub Actions workflow for signed/notarized macOS release artifacts.
 - `package.json` and `package-lock.json`: npm scripts and local Tauri CLI dependency.
 - `src-tauri/Cargo.toml` and `src-tauri/Cargo.lock`: Rust package metadata and dependency lock.
 
