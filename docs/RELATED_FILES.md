@@ -33,5 +33,6 @@
 ## Project Metadata
 
 - `README.md`: project description, run/package instructions, implementation status, and limitations.
+- `docs/DEVELOPMENT.md`: optional developer-only source run instructions.
 - `LICENSE`: MIT License.
 - `.gitignore`: excludes generated build outputs and local dependencies.

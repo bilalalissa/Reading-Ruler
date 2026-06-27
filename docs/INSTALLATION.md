@@ -121,28 +121,6 @@ The script checks:
 - Visual Studio Build Tools: <https://visualstudio.microsoft.com/visual-cpp-build-tools/>
 - Microsoft WebView2 Runtime: <https://developer.microsoft.com/microsoft-edge/webview2/>
 
-## Development Run
-
-Use this when you want to run from source instead of installing an app bundle.
-
-1. Install dependencies:
-
-```sh
-npm install
-```
-
-2. Build and run:
-
-```sh
-./script/build_and_run.sh
-```
-
-3. Optional: verify the app stays running:
-
-```sh
-./script/build_and_run.sh --verify
-```
-
 ## macOS Apple Silicon Install
 
 Use this on M1, M2, M3, or newer Apple Silicon Macs.

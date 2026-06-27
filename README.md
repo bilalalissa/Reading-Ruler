@@ -158,26 +158,6 @@ If automatic install is not available, install missing dependencies manually:
 - Visual Studio Build Tools: <https://visualstudio.microsoft.com/visual-cpp-build-tools/>
 - Microsoft WebView2 Runtime: <https://developer.microsoft.com/microsoft-edge/webview2/>
 
-### Development Run
-
-1. Install dependencies:
-
-```sh
-npm install
-```
-
-2. Build and run:
-
-```sh
-./script/build_and_run.sh
-```
-
-3. Optional: verify the app stays running:
-
-```sh
-./script/build_and_run.sh --verify
-```
-
 ### macOS Apple Silicon Install
 
 Use this on M1, M2, M3, or newer Apple Silicon Macs.
@@ -536,6 +516,8 @@ The generated files include `icon.icns`, `icon.ico`, bundle PNGs, and platform i
 ## Related Files
 
 See [Related files](docs/RELATED_FILES.md) for the main controller, overlay, backend, packaging, icon, and metadata files.
+
+Developer-only run instructions are in [Development](docs/DEVELOPMENT.md).
 
 ## Current Limitations
 
