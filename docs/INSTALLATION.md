@@ -34,6 +34,10 @@ Local unsigned builds are suitable for development and local testing. Public dis
 Use the distribution package script when a public macOS build is needed:
 
 ```sh
+npm run app:package:mac:distribution -- --check-prereqs
+```
+
+```sh
 APPLE_SIGNING_IDENTITY="Developer ID Application: Your Name (TEAMID)" \
   npm run app:package:mac:distribution
 ```

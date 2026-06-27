@@ -89,6 +89,10 @@ Public distribution still needs Developer ID signing, hardened runtime, and nota
 Public macOS distribution uses a separate packaging script so local unsigned testing stays simple:
 
 ```sh
+npm run app:package:mac:distribution -- --check-prereqs
+```
+
+```sh
 APPLE_SIGNING_IDENTITY="Developer ID Application: Your Name (TEAMID)" \
   npm run app:package:mac:distribution
 ```
@@ -206,6 +210,7 @@ Details: [Installation and packaging](docs/INSTALLATION.md)
 Signed macOS distribution packaging is implemented:
 
 - `npm run app:package:mac:distribution`
+- preflight check with `npm run app:package:mac:distribution -- --check-prereqs`
 - requires `APPLE_SIGNING_IDENTITY` set to a `Developer ID Application` certificate
 - signs with hardened runtime and timestamp
 - verifies signatures with `codesign` and Gatekeeper assessment with `spctl`

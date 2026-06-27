@@ -20,6 +20,8 @@ Usage:
   APPLE_SIGNING_IDENTITY="Developer ID Application: Name (TEAMID)" \
     ./script/package_macos_distribution.sh [--notarize KEYCHAIN_PROFILE]
 
+  ./script/package_macos_distribution.sh --check-prereqs
+
 Required:
   APPLE_SIGNING_IDENTITY  Developer ID Application identity for public distribution.
 
@@ -27,6 +29,7 @@ Optional:
   --notarize PROFILE      Submit both the app zip and DMG with xcrun notarytool.
                           PROFILE must already exist in the keychain:
                           xcrun notarytool store-credentials PROFILE
+  --check-prereqs         Print signing/notarization prerequisites and exit.
 
 Outputs:
   src-tauri/target/release/bundle/macos/Reading Ruler_<version>_<arch>.app.zip
@@ -36,6 +39,51 @@ USAGE
 }
 
 NOTARY_PROFILE=""
+CHECK_PREREQS=false
+
+require_tool() {
+  if command -v "$1" >/dev/null 2>&1; then
+    echo "ok: $1"
+  else
+    echo "missing: $1"
+    return 1
+  fi
+}
+
+check_prereqs() {
+  local failed=false
+
+  echo "macOS distribution prerequisites"
+  echo
+
+  for tool in npm node security codesign spctl hdiutil ditto shasum xcrun; do
+    if ! require_tool "$tool"; then
+      failed=true
+    fi
+  done
+
+  echo
+  echo "Code signing identities:"
+  security find-identity -v -p codesigning || failed=true
+
+  echo
+  if security find-identity -v -p codesigning | grep -F "Developer ID Application:" >/dev/null; then
+    echo "ok: Developer ID Application identity is installed"
+  else
+    echo "missing: Developer ID Application identity"
+    echo "install a Developer ID Application certificate before producing a public distribution build"
+    failed=true
+  fi
+
+  echo
+  echo "Notarization:"
+  echo "notarytool is available through xcrun when Xcode Command Line Tools are installed"
+  echo "store credentials with: xcrun notarytool store-credentials reading-ruler-notary"
+
+  if [[ "$failed" == true ]]; then
+    return 1
+  fi
+}
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -51,6 +99,10 @@ while [[ $# -gt 0 ]]; do
       NOTARY_PROFILE="$2"
       shift 2
       ;;
+    --check-prereqs)
+      CHECK_PREREQS=true
+      shift
+      ;;
     *)
       echo "Unknown argument: $1" >&2
       usage >&2
@@ -58,6 +110,11 @@ while [[ $# -gt 0 ]]; do
       ;;
   esac
 done
+
+if [[ "$CHECK_PREREQS" == true ]]; then
+  check_prereqs
+  exit $?
+fi
 
 if [[ -z "${APPLE_SIGNING_IDENTITY:-}" ]]; then
   echo "APPLE_SIGNING_IDENTITY is required for distribution packaging." >&2
