@@ -1,0 +1,46 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Reading Ruler",
+  "version": "0.1.0",
+  "identifier": "com.readingruler.prototype",
+  "build": {
+    "frontendDist": "../app"
+  },
+  "app": {
+    "macOSPrivateApi": true,
+    "withGlobalTauri": true,
+    "windows": [
+      {
+        "label": "main",
+        "title": "Reading Ruler",
+        "url": "index.html",
+        "width": 460,
+        "height": 900,
+        "minWidth": 360,
+        "minHeight": 640,
+        "center": true,
+        "resizable": true,
+        "decorations": true,
+        "transparent": false,
+        "alwaysOnTop": false
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "targets": ["app", "dmg"],
+    "category": "Utility",
+    "shortDescription": "Reading ruler overlay",
+    "longDescription": "A desktop overlay that helps focus on a line or region while reading."
+  }
+}

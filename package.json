@@ -1,0 +1,25 @@
+{
+  "name": "reading-ruler",
+  "version": "0.1.0",
+  "description": "Cross-platform desktop reading ruler overlay with multiple customizable rulers, window targeting, and macOS packaging.",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bilalalissa/Reading-Ruler.git"
+  },
+  "homepage": "https://github.com/bilalalissa/Reading-Ruler#readme",
+  "bugs": {
+    "url": "https://github.com/bilalalissa/Reading-Ruler/issues"
+  },
+  "scripts": {
+    "dev": "cargo run --manifest-path src-tauri/Cargo.toml",
+    "build": "cargo build --manifest-path src-tauri/Cargo.toml",
+    "app:build": "tauri build",
+    "app:package:mac": "./script/build_macos_app.sh"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.11.3"
+  }
+}

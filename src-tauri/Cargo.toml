@@ -1,0 +1,33 @@
+[package]
+name = "reading-ruler"
+version = "0.1.0"
+description = "Cross-platform desktop reading ruler overlay with multiple customizable rulers, window targeting, and macOS packaging."
+authors = ["Reading Ruler"]
+edition = "2021"
+license = "MIT"
+repository = "https://github.com/bilalalissa/Reading-Ruler"
+
+[lib]
+name = "reading_ruler_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[[bin]]
+name = "reading-ruler"
+path = "src/main.rs"
+
+[build-dependencies]
+tauri-build = { version = "2.6.2", features = [] }
+
+[dependencies]
+tauri = { version = "2.11.2", features = ["macos-private-api"] }
+tauri-plugin-global-shortcut = "2"
+core-foundation = "0.10.1"
+core-graphics = "0.25.0"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+strip = true

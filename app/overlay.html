@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reading Ruler Overlay</title>
+    <link rel="stylesheet" href="overlay.css" />
+  </head>
+  <body>
+    <main id="ruler" class="ruler" aria-label="Reading ruler overlay">
+      <div
+        class="ruler-grip ruler-grip-left resize-visual"
+        data-resize-direction="West"
+        aria-label="Resize ruler from left grip"
+        role="button"
+        tabindex="0"
+      ></div>
+      <div
+        class="ruler-line resize-visual"
+        data-resize-direction="East"
+        aria-label="Resize ruler from center rail"
+        role="button"
+        tabindex="0"
+      ></div>
+      <div
+        class="ruler-grip ruler-grip-right resize-visual"
+        data-resize-direction="East"
+        aria-label="Resize ruler from right grip"
+        role="button"
+        tabindex="0"
+      ></div>
+      <span class="drag-label">Drag body to move</span>
+      <button
+        class="resize-handle resize-handle-n"
+        type="button"
+        data-resize-direction="North"
+        aria-label="Resize ruler upward"
+      ></button>
+      <button
+        class="resize-handle resize-handle-ne"
+        type="button"
+        data-resize-direction="NorthEast"
+        aria-label="Resize ruler from top right"
+      ></button>
+      <button
+        class="resize-handle resize-handle-e"
+        type="button"
+        data-resize-direction="East"
+        aria-label="Resize ruler right"
+      ></button>
+      <button
+        class="resize-handle resize-handle-se"
+        type="button"
+        data-resize-direction="SouthEast"
+        aria-label="Resize ruler from bottom right"
+      ></button>
+      <button
+        class="resize-handle resize-handle-s"
+        type="button"
+        data-resize-direction="South"
+        aria-label="Resize ruler downward"
+      ></button>
+      <button
+        class="resize-handle resize-handle-sw"
+        type="button"
+        data-resize-direction="SouthWest"
+        aria-label="Resize ruler from bottom left"
+      ></button>
+      <button
+        class="resize-handle resize-handle-w"
+        type="button"
+        data-resize-direction="West"
+        aria-label="Resize ruler left"
+      ></button>
+      <button
+        class="resize-handle resize-handle-nw"
+        type="button"
+        data-resize-direction="NorthWest"
+        aria-label="Resize ruler from top left"
+      ></button>
+    </main>
+
+    <script src="overlay.js"></script>
+  </body>
+</html>

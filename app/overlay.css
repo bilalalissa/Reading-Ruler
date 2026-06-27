@@ -1,0 +1,298 @@
+:root {
+  color-scheme: light dark;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  background: transparent;
+  --border-thickness: 3px;
+  --border-color: #006858;
+  --background-fill: rgba(255, 239, 117, 0.46);
+  --stripe-fill-light: rgba(255, 239, 117, 0.2);
+  --stripe-fill-strong: rgba(255, 239, 117, 0.36);
+  --pattern-spacing: 18px;
+  --edge-width: 10px;
+  --background-image: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: transparent;
+}
+
+body {
+  display: grid;
+  place-items: stretch;
+  padding: 0;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.ruler {
+  position: relative;
+  display: grid;
+  grid-template-columns: 28px 1fr 28px auto;
+  align-items: center;
+  gap: 14px;
+  width: 100vw;
+  height: 100vh;
+  padding: 0 22px;
+  border: var(--border-thickness) solid var(--border-color);
+  border-radius: 8px;
+  background: var(--background-fill);
+  color: rgba(25, 47, 42, 0.72);
+  cursor: grab;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0;
+  backdrop-filter: saturate(120%);
+}
+
+.ruler::before {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: calc(8px - var(--border-thickness));
+  pointer-events: none;
+  content: "";
+}
+
+.ruler > * {
+  position: relative;
+  z-index: 1;
+}
+
+.ruler[data-pattern="striped"] {
+  background:
+    repeating-linear-gradient(
+      90deg,
+      var(--stripe-fill-light) 0,
+      var(--stripe-fill-light) var(--pattern-spacing),
+      var(--stripe-fill-strong) var(--pattern-spacing),
+      var(--stripe-fill-strong) calc(var(--pattern-spacing) * 2)
+    ),
+    var(--background-fill);
+}
+
+.ruler[data-pattern="dotted"] {
+  background:
+    radial-gradient(var(--stripe-fill-strong) 2px, transparent 2px),
+    var(--background-fill);
+  background-position: center;
+  background-size: var(--pattern-spacing) var(--pattern-spacing);
+}
+
+.ruler[data-pattern="grid"] {
+  background:
+    linear-gradient(var(--stripe-fill-strong) 1px, transparent 1px),
+    linear-gradient(90deg, var(--stripe-fill-strong) 1px, transparent 1px),
+    var(--background-fill);
+  background-size: var(--pattern-spacing) var(--pattern-spacing);
+}
+
+.ruler[data-pattern="transparent"] {
+  background: transparent;
+}
+
+.ruler[data-pattern="image"] {
+  background:
+    var(--background-image) center / cover no-repeat,
+    var(--background-fill);
+}
+
+.ruler[data-pattern="edgesAll"],
+.ruler[data-pattern="edgesTopBottom"],
+.ruler[data-pattern="edgesLeftRight"],
+.ruler[data-pattern="edgeTop"],
+.ruler[data-pattern="edgeBottom"],
+.ruler[data-pattern="edgeLeft"],
+.ruler[data-pattern="edgeRight"] {
+  background: transparent;
+}
+
+.ruler[data-pattern="edgesAll"]::before {
+  box-shadow:
+    inset 0 var(--edge-width) 0 var(--background-fill),
+    inset 0 calc(var(--edge-width) * -1) 0 var(--background-fill),
+    inset var(--edge-width) 0 0 var(--background-fill),
+    inset calc(var(--edge-width) * -1) 0 0 var(--background-fill);
+}
+
+.ruler[data-pattern="edgesTopBottom"]::before {
+  box-shadow:
+    inset 0 var(--edge-width) 0 var(--background-fill),
+    inset 0 calc(var(--edge-width) * -1) 0 var(--background-fill);
+}
+
+.ruler[data-pattern="edgesLeftRight"]::before {
+  box-shadow:
+    inset var(--edge-width) 0 0 var(--background-fill),
+    inset calc(var(--edge-width) * -1) 0 0 var(--background-fill);
+}
+
+.ruler[data-pattern="edgeTop"]::before {
+  box-shadow: inset 0 var(--edge-width) 0 var(--background-fill);
+}
+
+.ruler[data-pattern="edgeBottom"]::before {
+  box-shadow: inset 0 calc(var(--edge-width) * -1) 0 var(--background-fill);
+}
+
+.ruler[data-pattern="edgeLeft"]::before {
+  box-shadow: inset var(--edge-width) 0 0 var(--background-fill);
+}
+
+.ruler[data-pattern="edgeRight"]::before {
+  box-shadow: inset calc(var(--edge-width) * -1) 0 0 var(--background-fill);
+}
+
+.ruler.click-through-active {
+  cursor: default;
+}
+
+.ruler.click-through-active .resize-handle {
+  opacity: 0;
+}
+
+.ruler:active {
+  cursor: grabbing;
+}
+
+.ruler-grip {
+  width: 20px;
+  height: 42px;
+  border-radius: 5px;
+  background-image: radial-gradient(var(--border-color) 1.5px, transparent 1.5px);
+  background-position: 0 0;
+  background-size: 7px 7px;
+  cursor: ew-resize;
+}
+
+.ruler-line {
+  height: 4px;
+  border-radius: 99px;
+  background: var(--border-color);
+  cursor: ew-resize;
+  box-shadow:
+    0 10px 0 color-mix(in srgb, var(--border-color) 16%, transparent),
+    0 -10px 0 color-mix(in srgb, var(--border-color) 16%, transparent);
+}
+
+.drag-label {
+  white-space: nowrap;
+  cursor: grab;
+}
+
+.resize-visual {
+  border-radius: 6px;
+  outline: 0 solid transparent;
+  transition:
+    filter 120ms ease,
+    outline-color 120ms ease,
+    outline-width 120ms ease;
+}
+
+.resize-visual:hover,
+.resize-visual:focus-visible {
+  filter: saturate(150%) brightness(1.12);
+  outline: 3px solid color-mix(in srgb, var(--border-color) 44%, transparent);
+  outline-offset: 5px;
+}
+
+.resize-handle {
+  position: absolute;
+  z-index: 2;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--border-color) 22%, transparent);
+  opacity: 0.34;
+  appearance: none;
+  -webkit-appearance: none;
+  transition:
+    background-color 120ms ease,
+    opacity 120ms ease,
+    outline-color 120ms ease;
+}
+
+.resize-handle:hover,
+.resize-handle:focus-visible {
+  background: color-mix(in srgb, var(--border-color) 78%, transparent);
+  opacity: 0.96;
+  outline: 3px solid color-mix(in srgb, var(--border-color) 40%, transparent);
+  outline-offset: 2px;
+}
+
+.resize-handle-n,
+.resize-handle-s {
+  left: 50%;
+  width: min(220px, 58vw);
+  height: 14px;
+  transform: translateX(-50%);
+  cursor: ns-resize;
+}
+
+.resize-handle-n {
+  top: 0;
+}
+
+.resize-handle-s {
+  bottom: 0;
+}
+
+.resize-handle-e,
+.resize-handle-w {
+  top: 50%;
+  width: 14px;
+  height: min(120px, 72vh);
+  transform: translateY(-50%);
+  cursor: ew-resize;
+}
+
+.resize-handle-e {
+  right: 0;
+}
+
+.resize-handle-w {
+  left: 0;
+}
+
+.resize-handle-ne,
+.resize-handle-nw,
+.resize-handle-se,
+.resize-handle-sw {
+  width: 24px;
+  height: 24px;
+}
+
+.resize-handle-ne {
+  top: 0;
+  right: 0;
+  cursor: nesw-resize;
+}
+
+.resize-handle-nw {
+  top: 0;
+  left: 0;
+  cursor: nwse-resize;
+}
+
+.resize-handle-se {
+  right: 0;
+  bottom: 0;
+  cursor: nwse-resize;
+}
+
+.resize-handle-sw {
+  bottom: 0;
+  left: 0;
+  cursor: nesw-resize;
+}

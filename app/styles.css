@@ -1,0 +1,253 @@
+:root {
+  color-scheme: light dark;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  background: transparent;
+  color: CanvasText;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+.panel-body {
+  min-height: 100vh;
+  background:
+    linear-gradient(135deg, rgba(61, 126, 255, 0.08), transparent 34%),
+    Canvas;
+}
+
+.panel {
+  display: grid;
+  gap: 16px;
+  padding: 22px;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: #287067;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.1;
+  letter-spacing: 0;
+}
+
+.summary {
+  margin: 10px 0 0;
+  color: color-mix(in srgb, CanvasText 68%, transparent);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.status-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid color-mix(in srgb, CanvasText 14%, transparent);
+  border-radius: 8px;
+  background: color-mix(in srgb, Canvas 92%, CanvasText 8%);
+}
+
+.ruler-manager {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px 12px;
+  padding: 14px;
+  border: 1px solid color-mix(in srgb, CanvasText 12%, transparent);
+  border-radius: 8px;
+  background: color-mix(in srgb, Canvas 96%, CanvasText 4%);
+}
+
+.ruler-manager h2 {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.2;
+  letter-spacing: 0;
+}
+
+.label,
+dt {
+  display: block;
+  color: color-mix(in srgb, CanvasText 58%, transparent);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 18px;
+}
+
+button {
+  min-width: 112px;
+  min-height: 38px;
+  border: 1px solid color-mix(in srgb, #287067 62%, CanvasText 18%);
+  border-radius: 7px;
+  background: #287067;
+  color: white;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.secondary-button {
+  min-width: 0;
+  border-color: color-mix(in srgb, CanvasText 20%, transparent);
+  background: color-mix(in srgb, Canvas 86%, CanvasText 14%);
+  color: CanvasText;
+}
+
+.danger-button {
+  border-color: color-mix(in srgb, #a33 62%, CanvasText 16%);
+  background: #a33;
+  color: white;
+}
+
+button:active {
+  transform: translateY(1px);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+  transform: none;
+}
+
+.facts {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+
+.facts div {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  align-items: baseline;
+  gap: 10px;
+}
+
+dd {
+  margin: 0;
+  color: color-mix(in srgb, CanvasText 78%, transparent);
+  font-size: 13px;
+}
+
+.settings-form {
+  display: grid;
+  gap: 12px;
+}
+
+.field-group {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 12px;
+  padding: 14px;
+  border: 1px solid color-mix(in srgb, CanvasText 12%, transparent);
+  border-radius: 8px;
+  background: color-mix(in srgb, Canvas 96%, CanvasText 4%);
+}
+
+.field-group h2 {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.2;
+  letter-spacing: 0;
+}
+
+label {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.wide-field {
+  grid-column: 1 / -1;
+}
+
+.checkbox-field {
+  grid-template-columns: 18px 1fr;
+  align-items: center;
+  gap: 8px;
+}
+
+label span {
+  color: color-mix(in srgb, CanvasText 60%, transparent);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+input {
+  width: 100%;
+  min-height: 34px;
+  border: 1px solid color-mix(in srgb, CanvasText 18%, transparent);
+  border-radius: 7px;
+  background: Canvas;
+  color: CanvasText;
+  font: inherit;
+  font-size: 13px;
+}
+
+select {
+  width: 100%;
+  min-height: 34px;
+  border: 1px solid color-mix(in srgb, CanvasText 18%, transparent);
+  border-radius: 7px;
+  background: Canvas;
+  color: CanvasText;
+  font: inherit;
+  font-size: 13px;
+}
+
+input[type="number"] {
+  padding: 0 9px;
+}
+
+input[type="text"] {
+  padding: 0 9px;
+}
+
+input[type="checkbox"] {
+  width: 16px;
+  min-height: 16px;
+  margin: 0;
+}
+
+input[type="color"] {
+  padding: 3px;
+}
+
+input[type="range"] {
+  min-height: 34px;
+}
+
+.message {
+  min-height: 20px;
+  margin: 0;
+  color: #287067;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.field-note {
+  margin: 0;
+  color: color-mix(in srgb, CanvasText 58%, transparent);
+  font-size: 12px;
+  line-height: 1.35;
+}
