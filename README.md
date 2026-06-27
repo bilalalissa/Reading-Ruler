@@ -412,6 +412,8 @@ New local installation files are generated with:
 
 Use `.app.zip` for macOS local sharing and the generated NSIS/MSI installer for Windows local sharing. Keep DMGs local until Developer ID signing is available.
 
+The manual GitHub Actions workflow `Local Packaging` can also build unsigned local macOS `.app.zip` artifacts and unsigned Windows NSIS/MSI installer artifacts without Apple Developer ID credentials.
+
 ## How To Use
 
 ### Scenario: Read A Long Article Or PDF
@@ -481,6 +483,7 @@ Unsigned local platform packaging is implemented:
 - `npm run app:package:mac:local -- --target x64 --install`
 - `npm run app:package:mac:local -- --target universal --install`
 - `npm run app:package:windows:local`
+- manual GitHub Actions workflow `Local Packaging` for unsigned macOS and Windows artifacts
 - Tauri bundling is enabled for macOS `.app` and local DMG targets.
 - A generated app icon set is included.
 - `script/build_macos_app.sh` builds and validates the package.

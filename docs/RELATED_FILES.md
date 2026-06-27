@@ -18,6 +18,7 @@
 - `script/package_macos_local.sh`: unsigned local macOS `.app` zip/install helper for Apple Silicon, Intel, and universal builds when the matching Rust targets are installed.
 - `script/package_windows_local.ps1`: unsigned Windows NSIS/MSI local packaging helper.
 - `script/package_macos_distribution.sh`: Developer ID signing, hardened runtime, optional notarization, stapling, DMG creation, and checksum generation for macOS distribution.
+- `.github/workflows/local-packaging.yml`: manual GitHub Actions workflow for unsigned local macOS and Windows package artifacts.
 - `.github/workflows/macos-distribution.yml`: manual GitHub Actions workflow for signed/notarized macOS release artifacts.
 - `package.json` and `package-lock.json`: npm scripts and local Tauri CLI dependency.
 - `src-tauri/Cargo.toml` and `src-tauri/Cargo.lock`: Rust package metadata and dependency lock.

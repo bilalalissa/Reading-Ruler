@@ -382,6 +382,23 @@ New local installation files are generated with:
 
 Use `.app.zip` for macOS local sharing and the generated NSIS/MSI installer for Windows local sharing. Keep DMGs local until Developer ID signing is available.
 
+## GitHub Actions Local Packaging
+
+The manual `Local Packaging` workflow builds unsigned local artifacts without Apple Developer ID credentials.
+
+Use it when you want GitHub to produce local-share artifacts instead of building on your own machine:
+
+1. Open the repository on GitHub.
+2. Go to `Actions`.
+3. Select `Local Packaging`.
+4. Click `Run workflow`.
+5. Choose `macos` or `windows`.
+6. For macOS, choose `arm64`, `x64`, or `universal`.
+7. For Windows, choose `nsis` or `msi`.
+8. Download the generated workflow artifact after the run finishes.
+
+The macOS output contains `.app.zip` and `.sha256` files. The Windows output contains `.exe` or `.msi` installer files and a `.sha256` file.
+
 ## GitHub Repository
 
 The project repository is:

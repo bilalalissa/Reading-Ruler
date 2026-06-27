@@ -1,0 +1,111 @@
+name: Local Packaging
+
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: "Platform to package."
+        required: true
+        default: "macos"
+        type: choice
+        options:
+          - macos
+          - windows
+      macos_target:
+        description: "macOS target when platform is macos."
+        required: true
+        default: "arm64"
+        type: choice
+        options:
+          - arm64
+          - x64
+          - universal
+      windows_bundle:
+        description: "Windows installer bundle when platform is windows."
+        required: true
+        default: "nsis"
+        type: choice
+        options:
+          - nsis
+          - msi
+
+permissions:
+  contents: read
+
+jobs:
+  macos-local:
+    name: Build unsigned macOS local package
+    if: ${{ inputs.platform == 'macos' }}
+    runs-on: macos-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin,x86_64-apple-darwin
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Check macOS dependencies
+        run: ./script/check_macos_deps.sh --with-intel-target
+
+      - name: Build unsigned macOS package
+        run: npm run app:package:mac:local -- --target "${{ inputs.macos_target }}"
+
+      - name: Upload macOS package artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: reading-ruler-macos-${{ inputs.macos_target }}-local
+          if-no-files-found: error
+          path: |
+            src-tauri/target/*/release/bundle/macos/*.app.zip
+            src-tauri/target/*/release/bundle/*.sha256
+
+  windows-local:
+    name: Build unsigned Windows local installer
+    if: ${{ inputs.platform == 'windows' }}
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Check Windows dependencies
+        shell: powershell
+        run: powershell -ExecutionPolicy Bypass -File script/check_windows_deps.ps1
+
+      - name: Build unsigned Windows installer
+        shell: powershell
+        run: npm run app:package:windows:local -- -Bundle ${{ inputs.windows_bundle }}
+
+      - name: Upload Windows installer artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: reading-ruler-windows-${{ inputs.windows_bundle }}-local
+          if-no-files-found: error
+          path: |
+            src-tauri/target/release/bundle/**/*.exe
+            src-tauri/target/release/bundle/**/*.msi
+            src-tauri/target/release/bundle/*.sha256
