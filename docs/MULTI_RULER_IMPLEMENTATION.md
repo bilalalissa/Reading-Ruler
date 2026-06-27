@@ -10,7 +10,7 @@ The multi-ruler implementation lets each ruler own its own geometry, colors, bod
 - The controller can add, duplicate, rename, delete, select, show, and hide rulers.
 - Geometry changes from fields, dragging, and resizing persist per ruler.
 - Targeted mode tracks the selected exact window using saved offsets.
-- Target window listing uses native macOS CGWindow/Accessibility APIs on macOS and Win32 top-level window enumeration on Windows.
+- Target window listing uses native macOS CGWindow/Accessibility APIs on macOS and Win32 top-level window enumeration with process-name labels on Windows.
 - Global shortcut and app menu actions apply to the active ruler.
 - Body modes include solid, patterns, transparent modes, edge-only modes, and image backgrounds.
 - Click-through can be enabled while edit mode keeps overlays draggable/resizable.

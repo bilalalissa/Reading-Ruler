@@ -32,9 +32,13 @@ use tauri::{
 use tauri_plugin_global_shortcut::{GlobalShortcutExt, ShortcutState};
 #[cfg(target_os = "windows")]
 use windows::{
-    core::BOOL,
+    core::{BOOL, PWSTR},
     Win32::{
-        Foundation::{HWND, LPARAM, RECT},
+        Foundation::{CloseHandle, HWND, LPARAM, RECT},
+        System::Threading::{
+            OpenProcess, QueryFullProcessImageNameW, PROCESS_NAME_WIN32,
+            PROCESS_QUERY_LIMITED_INFORMATION,
+        },
         UI::WindowsAndMessaging::{
             EnumWindows, GetWindowRect, GetWindowTextLengthW, GetWindowTextW,
             GetWindowThreadProcessId, IsWindowVisible,
@@ -1374,6 +1378,39 @@ fn window_text(hwnd: HWND) -> Option<String> {
 }
 
 #[cfg(target_os = "windows")]
+fn process_owner_name(process_id: u32) -> String {
+    let fallback = format!("Process {process_id}");
+    let Ok(process) =
+        (unsafe { OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, false, process_id) })
+    else {
+        return fallback;
+    };
+
+    let mut buffer = vec![0u16; 32768];
+    let mut length = buffer.len() as u32;
+    let result = unsafe {
+        QueryFullProcessImageNameW(
+            process,
+            PROCESS_NAME_WIN32,
+            PWSTR(buffer.as_mut_ptr()),
+            &mut length,
+        )
+    };
+    let _ = unsafe { CloseHandle(process) };
+
+    if result.is_err() || length == 0 {
+        return fallback;
+    }
+
+    let path = String::from_utf16_lossy(&buffer[..length as usize]);
+    path.rsplit(['\\', '/'])
+        .next()
+        .map(|name| name.trim_end_matches(".exe").to_string())
+        .filter(|name| !name.trim().is_empty())
+        .unwrap_or(fallback)
+}
+
+#[cfg(target_os = "windows")]
 fn target_window_from_hwnd(hwnd: HWND) -> Option<TargetWindow> {
     if !unsafe { IsWindowVisible(hwnd).as_bool() } {
         return None;
@@ -1402,7 +1439,7 @@ fn target_window_from_hwnd(hwnd: HWND) -> Option<TargetWindow> {
     Some(TargetWindow {
         id: hwnd.0 as usize as u64,
         owner_pid: process_id as i32,
-        owner_name: format!("Process {process_id}"),
+        owner_name: process_owner_name(process_id),
         title,
         x: f64::from(rect.left),
         y: f64::from(rect.top),

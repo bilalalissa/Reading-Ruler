@@ -465,7 +465,7 @@ The macOS Apple Silicon multi-ruler overlay is implemented:
 - active-ruler controller behavior
 - per-ruler geometry, style, image, target, click-through, edit mode, and visibility
 - exact-window targeted mode with offsets
-- native target-window listing on macOS and Windows
+- native target-window listing on macOS and Windows, including process/window labels where available
 - direct drag/resize behavior with persistence
 - menu and shortcut control for the active ruler
 - settings migration and reset support
