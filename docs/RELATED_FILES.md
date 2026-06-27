@@ -11,6 +11,8 @@
 ## Packaging
 
 - `src-tauri/tauri.conf.json`: Tauri app, window, bundle, icon, and DMG configuration.
+- `script/check_macos_deps.sh`: macOS dependency checker/optional installer for Xcode Command Line Tools, Rust/Cargo, Node.js/npm, and the Intel Rust target.
+- `script/check_windows_deps.ps1`: Windows dependency checker/optional installer for Node.js/npm, Rust/Cargo, Visual Studio Build Tools, and WebView2 Runtime.
 - `script/build_and_run.sh`: development build/run helper.
 - `script/build_macos_app.sh`: unsigned macOS `.app` and DMG packaging validation.
 - `script/package_macos_local.sh`: unsigned local macOS `.app` zip/install helper for Apple Silicon, Intel, and universal builds when the matching Rust targets are installed.

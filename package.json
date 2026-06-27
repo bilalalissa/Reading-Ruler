@@ -14,6 +14,8 @@
     "url": "https://github.com/bilalalissa/Reading-Ruler/issues"
   },
   "scripts": {
+    "deps:check:mac": "./script/check_macos_deps.sh",
+    "deps:check:windows": "powershell -ExecutionPolicy Bypass -File script/check_windows_deps.ps1",
     "dev": "cargo run --manifest-path src-tauri/Cargo.toml",
     "build": "cargo build --manifest-path src-tauri/Cargo.toml",
     "app:build": "tauri build",
